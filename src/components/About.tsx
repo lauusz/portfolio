@@ -30,7 +30,7 @@ const About: React.FC = () => {
               <a href="#contact" className="btn btn-primary">
                 Get In Touch
               </a>
-              <a href="/CV_Nikolaus_Satria.pdf" download className="btn btn-outline">
+              <a href="/Resume_Nikolaus_Satria.pdf" download className="btn btn-outline">
                 Download CV
               </a>
             </div>
