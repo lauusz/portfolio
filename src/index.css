@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0F0E17;
+  --primary: #A7A9BE;
+  --accent: #FF8906;
+  --text: #FFFFFE;
+  --cta: #2CB67D;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-text font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-text;
+  }
+}
+
+@layer components {
+  .section-container {
+    @apply max-w-6xl mx-auto px-4 py-16 md:py-24;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl mb-8 font-bold relative inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    @apply absolute -bottom-2 left-0 w-2/3 h-1 bg-accent;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 text-primary hover:text-accent transition-colors duration-300;
+  }
+
+  .nav-link.active {
+    @apply text-accent;
+  }
+
+  .btn {
+    @apply px-6 py-3 rounded-md font-medium transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-accent text-text hover:bg-opacity-90;
+  }
+
+  .btn-secondary {
+    @apply bg-cta text-text hover:bg-opacity-90;
+  }
+
+  .btn-outline {
+    @apply border-2 border-accent text-accent hover:bg-accent hover:text-text;
+  }
+
+  .card {
+    @apply bg-background border border-primary/20 rounded-lg overflow-hidden transition-all duration-300 hover:border-accent/60 hover:shadow-[0_0_15px_rgba(255,137,6,0.15)];
+  }
+
+  .skill-bar {
+    @apply h-2 bg-primary/30 rounded-full overflow-hidden;
+  }
+
+  .skill-progress {
+    @apply h-full bg-accent;
+  }
+
+  @keyframes blink {
+    0%, 100% { border-color: transparent; }
+    50% { border-color: currentColor; }
+  }
+  
+  .animate-blink {
+    animation: blink 1s infinite;
+  }
+}
