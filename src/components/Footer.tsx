@@ -23,12 +23,7 @@ const Footer: React.FC = () => {
   }, []);
 
   const scrollToTop = () => {
-    const lenis = (window as any).lenis;
-    if (lenis) {
-      lenis.scrollTo(0, { duration: 1.5 });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Dynamic icon component from Lucide
