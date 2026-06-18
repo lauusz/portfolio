@@ -129,9 +129,9 @@
 
   .grid-bg {
     background-image:
-      linear-gradient(rgba(26, 26, 37, 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(26, 26, 37, 0.4) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(26, 26, 37, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 26, 37, 0.3) 1px, transparent 1px);
+    background-size: 60px 60px;
   }
 }
 
@@ -141,13 +141,24 @@
   }
 }
 
-/* Hide cursor on elements when custom cursor is active */
-@media (hover: hover) {
-  body {
-    cursor: none;
+/* Performance: content-visibility for off-screen sections (desktop only) */
+@media (min-width: 768px) {
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
   }
-  a, button, [role="button"], input, textarea, label {
-    cursor: none;
+}
+
+/* Performance: GPU acceleration for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Hide cursor on desktop when custom cursor is active */
+@media (hover: hover) {
+  body, a, button, [role="button"], input, textarea, label {
+    cursor: none !important;
   }
 }
 
@@ -162,5 +173,8 @@
   }
   html {
     scroll-behavior: auto;
+  }
+  section {
+    content-visibility: visible !important;
   }
 }

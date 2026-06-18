@@ -1,38 +1,66 @@
-import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 const CustomCursor = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const rafRef = useRef<number>(0);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const posRef = useRef({ x: 0, y: 0 });
   const targetRef = useRef({ x: 0, y: 0 });
+  const isHoveringRef = useRef(false);
+  const isVisibleRef = useRef(false);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const isTouchDevice = window.matchMedia('(hover: none)').matches;
     if (isTouchDevice) return;
 
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot || !ring) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       targetRef.current = { x: e.clientX, y: e.clientY };
-      if (!isVisible) setIsVisible(true);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+      }
     };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.closest('a, button, [role="button"], input, textarea, label')) {
-        setIsHovering(true);
+      const isHover = !!target.closest('a, button, [role="button"], input, textarea, label');
+      isHoveringRef.current = isHover;
+      if (isHover) {
+        ring.style.width = '40px';
+        ring.style.height = '40px';
+        ring.style.borderColor = 'rgba(0, 240, 255, 0.6)';
+        ring.style.backgroundColor = 'rgba(0, 240, 255, 0.1)';
+        dot.style.opacity = '0';
       } else {
-        setIsHovering(false);
+        ring.style.width = '24px';
+        ring.style.height = '24px';
+        ring.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+        ring.style.backgroundColor = 'transparent';
+        dot.style.opacity = '1';
       }
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseLeave = () => {
+      isVisibleRef.current = false;
+      dot.style.opacity = '0';
+      ring.style.opacity = '0';
+    };
 
     const animate = () => {
-      setPosition((prev) => ({
-        x: prev.x + (targetRef.current.x - prev.x) * 0.2,
-        y: prev.y + (targetRef.current.y - prev.y) * 0.2,
-      }));
+      posRef.current.x += (targetRef.current.x - posRef.current.x) * 0.18;
+      posRef.current.y += (targetRef.current.y - posRef.current.y) * 0.18;
+
+      const x = posRef.current.x;
+      const y = posRef.current.y;
+
+      dot.style.transform = `translate(${x - 4}px, ${y - 4}px)`;
+      ring.style.transform = `translate(${x - 12}px, ${y - 12}px)`;
+
       rafRef.current = requestAnimationFrame(animate);
     };
 
@@ -47,55 +75,30 @@ const CustomCursor = () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [isVisible]);
+  }, []);
 
   const isTouchDevice = typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches;
   if (isTouchDevice) return null;
 
   return (
     <>
-      {/* Main cursor block */}
-      <motion.div
-        className="fixed pointer-events-none z-[9999]"
-        animate={{
-          x: position.x - 6,
-          y: position.y - 6,
-          width: isHovering ? 40 : 12,
-          height: isHovering ? 40 : 12,
-          opacity: isVisible ? 1 : 0,
-        }}
-        transition={{ duration: 0.15, ease: 'easeOut' }}
+      {/* Inner dot */}
+      <div
+        ref={dotRef}
+        className="fixed top-0 left-0 w-2 h-2 bg-primary pointer-events-none z-[9999]"
         style={{
-          border: isHovering ? '1px solid rgba(0, 240, 255, 0.6)' : 'none',
-          backgroundColor: isHovering ? 'rgba(0, 240, 255, 0.1)' : 'rgba(0, 240, 255, 0.8)',
-          boxShadow: isHovering
-            ? '0 0 15px rgba(0, 240, 255, 0.3)'
-            : '0 0 8px rgba(0, 240, 255, 0.6)',
+          opacity: 0,
+          transition: 'opacity 0.15s',
+          boxShadow: '0 0 6px rgba(0, 240, 255, 0.6)',
         }}
       />
-      {/* Crosshair lines */}
+      {/* Outer ring */}
       <div
-        className="fixed pointer-events-none z-[9998]"
+        ref={ringRef}
+        className="fixed top-0 left-0 w-6 h-6 border border-primary/40 rounded-full pointer-events-none z-[9998]"
         style={{
-          left: position.x,
-          top: 0,
-          width: '1px',
-          height: '100vh',
-          background: 'linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.03), transparent)',
-          opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.2s',
-        }}
-      />
-      <div
-        className="fixed pointer-events-none z-[9998]"
-        style={{
-          left: 0,
-          top: position.y,
-          width: '100vw',
-          height: '1px',
-          background: 'linear-gradient(to right, transparent, rgba(0, 240, 255, 0.03), transparent)',
-          opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.2s',
+          opacity: 0,
+          transition: 'width 0.2s, height 0.2s, opacity 0.15s, border-color 0.2s, background-color 0.2s',
         }}
       />
     </>

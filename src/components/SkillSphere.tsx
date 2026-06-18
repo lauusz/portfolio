@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { skills } from '../constants/data';
 
@@ -6,10 +6,20 @@ const SkillSphere = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const hoveredSkillRef = useRef<string | null>(null);
+
+  const mousePosRef = useRef({ x: 0, y: 0 });
   const isDragging = useRef(false);
   const previousMouse = useRef({ x: 0, y: 0 });
   const rotationVelocity = useRef({ x: 0.002, y: 0.003 });
+  const isVisibleRef = useRef(true);
+  const isTabActiveRef = useRef(true);
+  const rafRef = useRef<number>(0);
+
+  const setHovered = useCallback((skill: string | null) => {
+    hoveredSkillRef.current = skill;
+    setHoveredSkill(skill);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -19,51 +29,47 @@ const SkillSphere = () => {
     const width = container.clientWidth;
     const height = container.clientHeight || 500;
 
-    // Scene
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
     camera.position.z = 5;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.display = 'block';
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Group to hold all skill nodes
     const sphereGroup = new THREE.Group();
     scene.add(sphereGroup);
 
     const radius = 2.2;
-    const skillNodes: { mesh: THREE.Mesh; label: string; originalPos: THREE.Vector3 }[] = [];
+    const skillNodes: { mesh: THREE.Sprite; label: string; originalScale: THREE.Vector3 }[] = [];
+    const phi = Math.PI * (3 - Math.sqrt(5));
 
-    // Fibonacci sphere distribution for even placement
-    const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
-
+    // Create text sprites once, reuse
     skills.forEach((skill, i) => {
-      const y = 1 - (i / (skills.length - 1)) * 2; // y from 1 to -1
-      const r = Math.sqrt(1 - y * y); // radius at y
+      const y = 1 - (i / (skills.length - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
       const theta = phi * i;
-
       const x = Math.cos(theta) * r * radius;
       const z = Math.sin(theta) * r * radius;
       const yPos = y * radius;
 
-      // Create text sprite
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d')!;
       canvas.width = 256;
       canvas.height = 64;
       ctx.fillStyle = 'rgba(0, 240, 255, 0.9)';
-      ctx.font = 'bold 24px "JetBrains Mono", monospace';
+      ctx.font = 'bold 24px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(skill.name, 128, 32);
 
       const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
       const material = new THREE.SpriteMaterial({
         map: texture,
         transparent: true,
@@ -71,33 +77,33 @@ const SkillSphere = () => {
       });
       const sprite = new THREE.Sprite(material);
       sprite.position.set(x, yPos, z);
-      sprite.scale.set(1.2, 0.3, 1);
+      const scale = new THREE.Vector3(1.2, 0.3, 1);
+      sprite.scale.copy(scale);
 
       sphereGroup.add(sprite);
       skillNodes.push({
         mesh: sprite,
         label: skill.name,
-        originalPos: new THREE.Vector3(x, yPos, z),
+        originalScale: scale.clone(),
       });
     });
 
-    // Add connecting lines (wireframe sphere)
+    // Connecting lines
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x00f0ff,
       transparent: true,
-      opacity: 0.05,
+      opacity: 0.04,
     });
-
     const lineGeometry = new THREE.BufferGeometry();
     const linePositions: number[] = [];
 
     for (let i = 0; i < skillNodes.length; i++) {
       for (let j = i + 1; j < skillNodes.length; j++) {
-        const dist = skillNodes[i].originalPos.distanceTo(skillNodes[j].originalPos);
+        const dist = skillNodes[i].mesh.position.distanceTo(skillNodes[j].mesh.position);
         if (dist < 1.8) {
           linePositions.push(
-            skillNodes[i].originalPos.x, skillNodes[i].originalPos.y, skillNodes[i].originalPos.z,
-            skillNodes[j].originalPos.x, skillNodes[j].originalPos.y, skillNodes[j].originalPos.z
+            skillNodes[i].mesh.position.x, skillNodes[i].mesh.position.y, skillNodes[i].mesh.position.z,
+            skillNodes[j].mesh.position.x, skillNodes[j].mesh.position.y, skillNodes[j].mesh.position.z,
           );
         }
       }
@@ -108,40 +114,44 @@ const SkillSphere = () => {
     sphereGroup.add(lines);
 
     // Center glow
-    const glowGeo = new THREE.SphereGeometry(0.3, 16, 16);
+    const glowGeo = new THREE.SphereGeometry(0.3, 8, 8);
     const glowMat = new THREE.MeshBasicMaterial({
       color: 0x00f0ff,
       transparent: true,
-      opacity: 0.1,
+      opacity: 0.08,
     });
     const glow = new THREE.Mesh(glowGeo, glowMat);
     sphereGroup.add(glow);
 
-    // Raycaster for hover detection
+    // Raycaster
     const raycaster = new THREE.Raycaster();
+    let frameCount = 0;
 
     // Animation loop
-    let raf: number;
     const animate = () => {
-      raf = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
 
-      // Auto rotation
+      // Skip if not visible or tab hidden
+      if (!isVisibleRef.current || !isTabActiveRef.current) return;
+
+      // Skip every 2nd frame (30fps)
+      frameCount++;
+      if (frameCount % 2 !== 0) return;
+
       sphereGroup.rotation.y += rotationVelocity.current.y;
       sphereGroup.rotation.x += rotationVelocity.current.x;
 
-      // Dampen velocity from drag
       if (!isDragging.current) {
         rotationVelocity.current.x *= 0.995;
         rotationVelocity.current.y *= 0.995;
-        // Ensure minimum rotation
         if (Math.abs(rotationVelocity.current.y) < 0.002) rotationVelocity.current.y = 0.002;
       }
 
-      // Hover detection
-      if (!isTouch && mousePos.x !== 0) {
+      // Raycast only every 5th frame for performance
+      if (!isTouch && frameCount % 10 === 0 && mousePosRef.current.x !== 0) {
         const mouse = new THREE.Vector2(
-          (mousePos.x / width) * 2 - 1,
-          -(mousePos.y / height) * 2 + 1
+          (mousePosRef.current.x / width) * 2 - 1,
+          -(mousePosRef.current.y / height) * 2 + 1,
         );
         raycaster.setFromCamera(mouse, camera);
         const intersects = raycaster.intersectObjects(skillNodes.map((n) => n.mesh));
@@ -150,15 +160,15 @@ const SkillSphere = () => {
           const hit = intersects[0].object as THREE.Sprite;
           const node = skillNodes.find((n) => n.mesh === hit);
           if (node) {
-            setHoveredSkill(node.label);
+            setHovered(node.label);
             hit.material.opacity = 1;
             hit.scale.set(1.5, 0.375, 1);
           }
-        } else {
-          setHoveredSkill(null);
+        } else if (hoveredSkillRef.current) {
+          setHovered(null);
           skillNodes.forEach((n) => {
             n.mesh.material.opacity = 0.8;
-            n.mesh.scale.set(1.2, 0.3, 1);
+            n.mesh.scale.copy(n.originalScale);
           });
         }
       }
@@ -168,7 +178,7 @@ const SkillSphere = () => {
 
     animate();
 
-    // Mouse events for drag
+    // Mouse events
     const handleMouseDown = (e: MouseEvent) => {
       isDragging.current = true;
       previousMouse.current = { x: e.clientX, y: e.clientY };
@@ -176,7 +186,7 @@ const SkillSphere = () => {
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
-      setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
 
       if (isDragging.current) {
         const deltaX = e.clientX - previousMouse.current.x;
@@ -197,6 +207,17 @@ const SkillSphere = () => {
       window.addEventListener('mouseup', handleMouseUp);
     }
 
+    // IntersectionObserver — pause when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+      { threshold: 0, rootMargin: '100px' },
+    );
+    observer.observe(container);
+
+    // Visibility API
+    const handleVisibility = () => { isTabActiveRef.current = document.visibilityState === 'visible'; };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     // Resize
     const handleResize = () => {
       const w = container.clientWidth;
@@ -209,17 +230,27 @@ const SkillSphere = () => {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(rafRef.current);
       window.removeEventListener('resize', handleResize);
       container.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      observer.disconnect();
       renderer.dispose();
+      skillNodes.forEach((n) => {
+        n.mesh.material.map?.dispose();
+        n.mesh.material.dispose();
+      });
+      lineGeometry.dispose();
+      lineMaterial.dispose();
+      glowGeo.dispose();
+      glowMat.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [setHovered]);
 
   return (
     <div className="relative">
