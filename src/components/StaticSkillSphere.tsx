@@ -1,19 +1,25 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 import { skills } from '../constants/data';
+import { iconMap } from '../constants/iconMap';
 
 const StaticSkillSphere = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const phi = Math.PI * (3 - Math.sqrt(5));
+  const getIcon = (iconName: string) => {
+    const Icon = iconMap[iconName as keyof typeof iconMap];
+    return Icon ? <Icon className="w-5 h-5 sm:w-6 sm:h-6" /> : null;
+  };
+
+  // 8 items evenly spaced on a circle, using a square aspect-ratio container
+  const radius = 35;
+  const center = 50;
+  const count = skills.length;
+
   const nodes = skills.map((skill, i) => {
-    const y = 1 - (i / (skills.length - 1)) * 2;
-    const r = Math.sqrt(1 - y * y);
-    const theta = phi * i;
-    const x = Math.cos(theta) * r * 0.85 + 0.5;
-    const z = Math.sin(theta) * r * 0.85 + 0.5;
-    const scale = 0.7 + (z - 0.5) * 0.3;
-    const opacity = 0.5 + (z - 0.5) * 0.5;
-    return { skill, x, y, z, scale, opacity };
+    const angle = (2 * Math.PI * i) / count - Math.PI / 2;
+    const x = center + radius * Math.cos(angle);
+    const y = center + radius * Math.sin(angle);
+    return { skill, x, y, angle };
   });
 
   return (
@@ -30,77 +36,90 @@ const StaticSkillSphere = () => {
           </h2>
         </div>
 
-        <div className="card overflow-hidden">
-          <div
-            ref={containerRef}
-            className="relative w-full h-[400px] md:h-[500px] overflow-hidden"
-          >
-            {/* Constellation lines */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
-              {nodes.map((n1, i) =>
-                nodes.map((n2, j) => {
-                  if (i >= j) return null;
-                  const dx = n1.x - n2.x;
-                  const dy = n1.y - n2.y;
-                  const dist = Math.sqrt(dx * dx + dy * dy);
-                  if (dist > 0.4) return null;
-                  return (
-                    <line
-                      key={`${i}-${j}`}
-                      x1={`${n1.x * 100}%`}
-                      y1={`${(n1.y * 0.5 + 0.25) * 100}%`}
-                      x2={`${n2.x * 100}%`}
-                      y2={`${(n2.y * 0.5 + 0.25) * 100}%`}
-                      stroke="rgba(176, 137, 104, 0.15)"
-                      strokeWidth="1"
-                    />
-                  );
-                })
-              )}
+        {/* Square container for perfect circular orbit */}
+        <div className="card overflow-hidden bg-surface">
+          <div className="relative w-full" style={{ aspectRatio: '1 / 1', maxHeight: '520px' }}>
+            {/* Background: subtle concentric rings */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[70%] h-[70%] rounded-full border border-border/30" />
+              <div className="absolute w-[50%] h-[50%] rounded-full border border-border/20" />
+              <div className="absolute w-[30%] h-[30%] rounded-full border border-border/10" />
+            </div>
+
+            {/* Center hub */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-accent flex items-center justify-center shadow-xl shadow-accent/20">
+                <span className="font-sans text-xs sm:text-sm font-bold text-white text-center">
+                  Core
+                </span>
+              </div>
+            </div>
+
+            {/* SVG: connecting lines */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+              {/* Lines from center to each node */}
+              {nodes.map((node, i) => (
+                <line
+                  key={`line-${i}`}
+                  x1={`${center}%`}
+                  y1={`${center}%`}
+                  x2={`${node.x}%`}
+                  y2={`${node.y}%`}
+                  stroke={hoveredIndex === i ? '#B08968' : 'rgba(176, 137, 104, 0.25)'}
+                  strokeWidth={hoveredIndex === i ? 2.5 : 1.5}
+                  strokeDasharray={hoveredIndex === i ? 'none' : '6 4'}
+                  className="transition-all duration-300"
+                />
+              ))}
+              {/* Outer ring connecting all nodes */}
+              <polygon
+                points={nodes.map(n => `${n.x},${n.y}`).join(' ')}
+                fill="none"
+                stroke="rgba(176, 137, 104, 0.08)"
+                strokeWidth="1"
+              />
             </svg>
 
             {/* Skill nodes */}
-            {nodes.map((node) => (
-              <div
-                key={node.skill.name}
-                className="absolute font-sans text-xs px-4 py-2 rounded-full transition-all duration-300 cursor-default group bg-white border border-border shadow-sm"
-                style={{
-                  left: `${node.x * 100}%`,
-                  top: `${(node.y * 0.5 + 0.25) * 100}%`,
-                  transform: `translate(-50%, -50%) scale(${node.scale})`,
-                  opacity: node.opacity,
-                  color: '#1A1A1A',
-                }}
-                onMouseEnter={(e) => {
-                  const el = e.currentTarget;
-                  el.style.opacity = '1';
-                  el.style.borderColor = '#B08968';
-                  el.style.backgroundColor = '#B08968';
-                  el.style.color = '#FFFFFF';
-                  el.style.transform = `translate(-50%, -50%) scale(${node.scale * 1.15})`;
-                  el.style.boxShadow = '0 4px 20px rgba(176, 137, 104, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  const el = e.currentTarget;
-                  el.style.opacity = String(node.opacity);
-                  el.style.borderColor = '#E5E5E5';
-                  el.style.backgroundColor = '#FFFFFF';
-                  el.style.color = '#1A1A1A';
-                  el.style.transform = `translate(-50%, -50%) scale(${node.scale})`;
-                  el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
-                }}
-              >
-                {node.skill.name}
-              </div>
-            ))}
-
-            {/* Center glow */}
-            <div
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full pointer-events-none"
-              style={{
-                background: 'radial-gradient(circle, rgba(176,137,104,0.12) 0%, transparent 70%)',
-              }}
-            />
+            {nodes.map((node, i) => {
+              const isHovered = hoveredIndex === i;
+              return (
+                <div
+                  key={node.skill.name}
+                  className="absolute z-10"
+                  style={{
+                    left: `${node.x}%`,
+                    top: `${node.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <div className="flex flex-col items-center gap-2 transition-transform duration-300 cursor-pointer">
+                    {/* Icon circle */}
+                    <div
+                      className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
+                        isHovered
+                          ? 'bg-accent text-white shadow-lg shadow-accent/30 scale-110'
+                          : 'bg-white text-accent border-2 border-border'
+                      }`}
+                    >
+                      {getIcon(node.skill.icon)}
+                    </div>
+                    {/* Label pill */}
+                    <span
+                      className={`font-sans text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap px-3 py-1 rounded-full ${
+                        isHovered
+                          ? 'bg-accent text-white shadow-md'
+                          : 'bg-white text-primary border border-border'
+                      }`}
+                    >
+                      {node.skill.name}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
