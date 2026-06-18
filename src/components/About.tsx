@@ -37,7 +37,7 @@ const About = () => {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasAnimated]);
+  }, [hasAnimated, yearsExp]);
 
   return (
     <section id="about" className="section-padding relative" ref={sectionRef}>
@@ -47,9 +47,9 @@ const About = () => {
             About Me
           </p>
           <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
-            Crafting digital
+            Building useful
             <br />
-            <span className="text-muted">experiences</span>
+            <span className="text-muted">software systems</span>
           </h2>
         </div>
 
@@ -59,14 +59,14 @@ const About = () => {
             <div className="card">
               <div className="p-6 sm:p-8 space-y-5">
                 <p className="font-sans text-base text-muted leading-relaxed">
-                  I'm a tech-driven full-stack developer with a strong focus on UI/UX design, Data Science, and AI. With over {yearsExp} years of hands-on experience, I've built responsive web applications that solve real-world problems — from SaaS products to smart contract integrations.
+                  I&apos;m a full-stack developer who enjoys building software end to end: product interfaces, backend logic, database flows, and the AI layer when the problem calls for it. With over {yearsExp} years of hands-on experience, I care most about making systems feel clear, fast, and useful.
                 </p>
                 <p className="font-sans text-base text-muted leading-relaxed">
-                  I specialize in building modern, scalable applications using React, Next.js, Node.js, and TypeScript. I'm also diving deep into Machine Learning and LLMs, currently experimenting with AI agents and automation tools to push the limits of what software can do.
+                  My strongest lane is modern web product development with React, Next.js, Node.js, TypeScript, Python, and SQL-backed systems. On the AI side, I&apos;m actively building recommendation flows, automation experiments, and early-stage agent ideas that connect models to real product experiences.
                 </p>
                 <div className="pt-4 flex flex-wrap gap-4">
                   <a href="#contact" className="btn-accent text-sm">
-                    Get in Touch
+                    Discuss a Role
                   </a>
                   <a href="/Resume_Nikolaus_Satria.pdf" download className="btn-outline text-sm flex items-center gap-2">
                     <Download size={14} /> Download CV
@@ -80,17 +80,17 @@ const About = () => {
               <div className="card text-center p-5">
                 <Calendar className="w-5 h-5 text-accent mx-auto mb-3" />
                 <div className="font-sans text-3xl font-bold text-primary">{count1}+</div>
-                <div className="font-sans text-xs text-muted mt-1">Years Exp</div>
+                <div className="font-sans text-xs text-muted mt-1">Years Building</div>
               </div>
               <div className="card text-center p-5">
                 <Briefcase className="w-5 h-5 text-accent-secondary mx-auto mb-3" />
                 <div className="font-sans text-3xl font-bold text-primary">{count2}+</div>
-                <div className="font-sans text-xs text-muted mt-1">Projects</div>
+                <div className="font-sans text-xs text-muted mt-1">Projects Built</div>
               </div>
               <div className="card text-center p-5">
                 <Code className="w-5 h-5 text-accent mx-auto mb-3" />
                 <div className="font-sans text-3xl font-bold text-primary">{count3}+</div>
-                <div className="font-sans text-xs text-muted mt-1">Tech Stack</div>
+                <div className="font-sans text-xs text-muted mt-1">Core Tools</div>
               </div>
             </div>
           </div>

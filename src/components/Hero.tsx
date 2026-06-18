@@ -5,7 +5,7 @@ const Hero = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const texts = ['UI/UX Designer', 'Full-Stack Developer', 'AI Engineer'];
+    const texts = ['Full-Stack Developer', 'AI Engineer', 'Web Apps + Intelligent Systems'];
     let textIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -43,7 +43,7 @@ const Hero = () => {
         <div className="max-w-3xl relative">
           {/* Label */}
           <p className="font-sans text-sm text-accent font-medium uppercase tracking-widest mb-6">
-            UI/UX Designer & Developer
+            Full-Stack Developer / AI Engineer
           </p>
 
           {/* Name */}
@@ -61,18 +61,25 @@ const Hero = () => {
           </div>
 
           {/* Description */}
-          <p className="font-sans text-base md:text-lg text-muted max-w-xl leading-relaxed mb-10">
-            I design thoughtful digital experiences and build them with clean code. 
-            Currently exploring the intersection of AI, design, and human interaction.
-          </p>
+          <div className="max-w-2xl mb-10 space-y-4">
+            <p className="font-sans text-base md:text-lg text-muted leading-relaxed">
+              I build production-ready web apps, backend workflows, and AI-powered tools that turn messy ideas into useful products.
+            </p>
+            <p className="font-sans text-sm md:text-base text-muted leading-relaxed">
+              My focus is shipping practical software with React, TypeScript, Node.js, Python, and modern AI tooling, from frontend experience to API logic and automation.
+            </p>
+            <p className="font-sans text-xs md:text-sm text-accent-secondary uppercase tracking-[0.18em]">
+              Open to collaboration on products, MVPs, and AI-powered ideas
+            </p>
+          </div>
 
           {/* CTAs */}
           <div className="flex flex-wrap gap-4">
             <a href="#projects" className="btn-primary">
-              View Work
+              View Projects
             </a>
             <a href="#contact" className="btn-outline">
-              Get in Touch
+              Let&apos;s Talk
             </a>
           </div>
         </div>

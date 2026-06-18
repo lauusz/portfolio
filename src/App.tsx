@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 
 function App() {
   useEffect(() => {
-    document.title = 'Nikolaus Satria — UI/UX Designer & Developer';
+    document.title = 'Nikolaus Satria — Full-Stack Developer / AI Engineer';
   }, []);
 
   return (
@@ -24,6 +24,11 @@ function App() {
         smoothWheel: true,
         syncTouch: true,
         touchMultiplier: 1.5,
+        anchors: {
+          offset: 80,
+          lock: true,
+        },
+        stopInertiaOnNavigate: true,
       }}
     >
       <div className="min-h-screen bg-bg text-primary overflow-x-hidden relative selection:bg-accent/20">

@@ -65,7 +65,9 @@ export function useSound(): SoundEngine {
       gain.connect(ctx.destination);
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + duration);
-    } catch {}
+    } catch {
+      return;
+    }
   }, [getCtx]);
 
   const playTyping = useCallback(() => {
@@ -100,7 +102,9 @@ export function useSound(): SoundEngine {
         gain.connect(ctx.destination);
         osc.start(ctx.currentTime + i * 0.1);
         osc.stop(ctx.currentTime + i * 0.1 + 0.2);
-      } catch {}
+      } catch {
+        return;
+      }
     });
   }, [getCtx]);
 

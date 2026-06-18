@@ -7,6 +7,9 @@ export interface Project {
   id: number;
   title: string;
   description: string;
+  role: string;
+  outcome: string;
+  highlights: string[];
   technologies: string[];
   image: string;
   demoUrl?: string;

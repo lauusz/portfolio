@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Github, Instagram, Linkedin, Mail } from 'lucide-react';
 import { socialLinks } from '../constants/data';
-import * as LucideIcons from 'lucide-react';
+
+const socialIconMap = {
+  Github,
+  Linkedin,
+  Instagram,
+  Mail,
+};
 
 const Footer = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -13,8 +19,8 @@ const Footer = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const getIcon = (iconName: string) => {
-    const Icon = (LucideIcons as any)[iconName];
+  const getIcon = (iconName: keyof typeof socialIconMap) => {
+    const Icon = socialIconMap[iconName];
     return Icon ? <Icon className="text-muted" size={18} /> : null;
   };
 
@@ -33,12 +39,12 @@ const Footer = () => {
               <a
                 key={link.name}
                 href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={link.url.startsWith('mailto:') ? undefined : '_blank'}
+                rel={link.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
                 className="w-10 h-10 bg-surface-elevated rounded-full flex items-center justify-center text-muted hover:bg-accent hover:text-white transition-all duration-300"
                 aria-label={link.name}
               >
-                {getIcon(link.icon)}
+                {getIcon(link.icon as keyof typeof socialIconMap)}
               </a>
             ))}
           </div>
@@ -50,14 +56,9 @@ const Footer = () => {
           <p className="font-sans text-xs text-muted">
             &copy; {new Date().getFullYear()} Nikolaus Satria. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="font-sans text-xs text-muted hover:text-primary transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="font-sans text-xs text-muted hover:text-primary transition-colors">
-              Terms of Service
-            </a>
-          </div>
+          <p className="font-sans text-xs text-muted text-center md:text-right">
+            Available for freelance projects, product design, and full-stack development.
+          </p>
         </div>
       </div>
 

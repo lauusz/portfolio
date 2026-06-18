@@ -62,6 +62,7 @@ const Projects = () => {
                       href={project.codeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`View code for ${project.title}`}
                       className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:bg-accent hover:text-white transition-colors"
                     >
                       <Github size={18} />
@@ -72,6 +73,7 @@ const Projects = () => {
                       href={project.demoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={`View live demo for ${project.title}`}
                       className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:bg-accent hover:text-white transition-colors"
                     >
                       <ExternalLink size={18} />
@@ -85,6 +87,57 @@ const Projects = () => {
                 </p>
                 <h3 className="font-sans text-xl font-bold text-primary mb-2">{project.title}</h3>
                 <p className="font-sans text-sm text-muted leading-relaxed mb-4">{project.description}</p>
+                <div className="grid grid-cols-1 gap-3 mb-4">
+                  <div className="rounded-2xl bg-surface-elevated/70 border border-border px-4 py-3">
+                    <p className="font-sans text-[11px] uppercase tracking-[0.18em] text-muted mb-1">Role</p>
+                    <p className="font-sans text-sm text-primary">{project.role}</p>
+                  </div>
+                  <div className="rounded-2xl bg-surface-elevated/70 border border-border px-4 py-3">
+                    <p className="font-sans text-[11px] uppercase tracking-[0.18em] text-muted mb-1">Outcome</p>
+                    <p className="font-sans text-sm text-primary">{project.outcome}</p>
+                  </div>
+                </div>
+                {(project.codeUrl || project.demoUrl) && (
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {project.codeUrl && (
+                      <a
+                        href={project.codeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`View code for ${project.title}`}
+                        className="inline-flex items-center gap-2 font-sans text-sm text-primary hover:text-accent transition-colors"
+                      >
+                        <Github size={16} />
+                        View Code
+                      </a>
+                    )}
+                    {project.demoUrl && (
+                      <a
+                        href={project.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`View live demo for ${project.title}`}
+                        className="inline-flex items-center gap-2 font-sans text-sm text-primary hover:text-accent transition-colors"
+                      >
+                        <ExternalLink size={16} />
+                        Live Demo
+                      </a>
+                    )}
+                  </div>
+                )}
+                <div className="mb-4">
+                  <p className="font-sans text-[11px] uppercase tracking-[0.18em] text-muted mb-2">Key Focus</p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.highlights.map((highlight) => (
+                      <span
+                        key={highlight}
+                        className="font-sans text-xs px-3 py-1 bg-white text-primary rounded-full border border-border"
+                      >
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech) => (
                     <span

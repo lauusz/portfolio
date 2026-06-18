@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { contactInfo, mailtoLink } from '../constants/data';
-import { Mail, MapPin, CheckCircle, Send, Copy, Check } from 'lucide-react';
+import { Mail, MapPin, CheckCircle, Send, Copy, Check, ExternalLink } from 'lucide-react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -44,13 +44,23 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-sans text-xs text-muted uppercase tracking-wider">Email</p>
-                    <button
-                      onClick={handleCopyEmail}
-                      className="font-sans text-sm text-primary hover:text-accent transition-colors flex items-center gap-2"
-                    >
-                      {contactInfo.email}
-                      {copied ? <Check size={14} className="text-accent-secondary" /> : <Copy size={14} className="text-muted" />}
-                    </button>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <a
+                        href={mailtoLink}
+                        className="font-sans text-sm text-primary hover:text-accent transition-colors inline-flex items-center gap-2"
+                      >
+                        {contactInfo.email}
+                        <ExternalLink size={14} className="text-muted" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={handleCopyEmail}
+                        className="font-sans text-sm text-muted hover:text-accent transition-colors inline-flex items-center gap-2"
+                      >
+                        {copied ? 'Copied' : 'Copy'}
+                        {copied ? <Check size={14} className="text-accent-secondary" /> : <Copy size={14} className="text-muted" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -75,7 +85,7 @@ const Contact = () => {
             </div>
 
             <p className="font-sans text-base text-muted leading-relaxed">
-              I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Let's build something amazing together.
+              I&apos;m most interested in collaborating on product ideas, digital businesses, and AI experiments where I can help turn direction into working software.
             </p>
           </div>
 
@@ -83,8 +93,9 @@ const Contact = () => {
           <div className="card p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="label">Your Name</label>
+                <label htmlFor="contact-name" className="label">Your Name</label>
                 <input
+                  id="contact-name"
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -94,8 +105,9 @@ const Contact = () => {
                 />
               </div>
               <div>
-                <label className="label">Email Address</label>
+                <label htmlFor="contact-email" className="label">Email Address</label>
                 <input
+                  id="contact-email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -105,8 +117,9 @@ const Contact = () => {
                 />
               </div>
               <div>
-                <label className="label">Message</label>
+                <label htmlFor="contact-message" className="label">Message</label>
                 <textarea
+                  id="contact-message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={5}
@@ -115,12 +128,17 @@ const Contact = () => {
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="btn-accent w-full flex items-center justify-center gap-2"
-              >
-                <Send size={16} /> Send Message
-              </button>
+              <div className="space-y-3">
+                <button
+                  type="submit"
+                  className="btn-accent w-full flex items-center justify-center gap-2"
+                >
+                  <Send size={16} /> Open Email Draft
+                </button>
+                <p className="font-sans text-xs text-muted leading-relaxed">
+                  This opens your email app with the message pre-filled. If nothing happens, use the email link or copy button above.
+                </p>
+              </div>
             </form>
           </div>
         </div>

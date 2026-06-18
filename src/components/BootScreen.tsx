@@ -1,41 +1,41 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BootScreenProps {
   onComplete: () => void;
 }
 
+const BOOT_LINES = [
+  { text: 'BOOT SYSTEM v3.0.1', delay: 100 },
+  { text: '[OK] Initializing kernel...', delay: 200 },
+  { text: '[OK] Loading neural network modules...', delay: 300 },
+  { text: '[OK] React v18.3.1 loaded', delay: 100 },
+  { text: '[OK] TypeScript compiler initialized', delay: 150 },
+  { text: '[OK] Node.js runtime detected', delay: 100 },
+  { text: '[OK] Loading skills: React, Next.js, Python, Docker...', delay: 300 },
+  { text: '[OK] GSAP animation engine mounted', delay: 150 },
+  { text: '[OK] Three.js 3D renderer initialized', delay: 200 },
+  { text: '[OK] Portfolio modules mounted', delay: 200 },
+  { text: '[OK] Establishing secure connection...', delay: 250 },
+  { text: 'System ready.', delay: 300 },
+  { text: '', delay: 100 },
+  { text: '> Welcome, user.', delay: 500 },
+  { text: '> Press [ENTER] to initialize portfolio...', delay: 0 },
+];
+
 const BootScreen = ({ onComplete }: BootScreenProps) => {
   const [lines, setLines] = useState<string[]>([]);
   const [showCursor, setShowCursor] = useState(true);
   const [done, setDone] = useState(false);
-
-  const bootLines = [
-    { text: 'BOOT SYSTEM v3.0.1', delay: 100 },
-    { text: '[OK] Initializing kernel...', delay: 200 },
-    { text: '[OK] Loading neural network modules...', delay: 300 },
-    { text: '[OK] React v18.3.1 loaded', delay: 100 },
-    { text: '[OK] TypeScript compiler initialized', delay: 150 },
-    { text: '[OK] Node.js runtime detected', delay: 100 },
-    { text: '[OK] Loading skills: React, Next.js, Python, Docker...', delay: 300 },
-    { text: '[OK] GSAP animation engine mounted', delay: 150 },
-    { text: '[OK] Three.js 3D renderer initialized', delay: 200 },
-    { text: '[OK] Portfolio modules mounted', delay: 200 },
-    { text: '[OK] Establishing secure connection...', delay: 250 },
-    { text: 'System ready.', delay: 300 },
-    { text: '', delay: 100 },
-    { text: '> Welcome, user.', delay: 500 },
-    { text: '> Press [ENTER] to initialize portfolio...', delay: 0 },
-  ];
 
   useEffect(() => {
     let currentIndex = 0;
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const showNextLine = () => {
-      if (currentIndex < bootLines.length) {
-        setLines((prev) => [...prev, bootLines[currentIndex].text]);
-        timeoutId = setTimeout(showNextLine, bootLines[currentIndex].delay);
+      if (currentIndex < BOOT_LINES.length) {
+        setLines((prev) => [...prev, BOOT_LINES[currentIndex].text]);
+        timeoutId = setTimeout(showNextLine, BOOT_LINES[currentIndex].delay);
         currentIndex++;
       } else {
         // Auto-complete after 2 seconds if user doesn't press Enter
@@ -56,24 +56,27 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
     return () => clearInterval(blink);
   }, []);
 
-  const handleClick = () => {
-    if (!done && lines.length >= bootLines.length - 1) {
+  const handleComplete = useCallback(() => {
+    if (!done && lines.length >= BOOT_LINES.length - 1) {
       setDone(true);
       setTimeout(onComplete, 800);
     }
+  }, [done, lines.length, onComplete]);
+
+  const handleClick = () => {
+    handleComplete();
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && !done && lines.length >= bootLines.length - 1) {
-      setDone(true);
-      setTimeout(onComplete, 800);
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleComplete();
     }
-  };
+  }, [handleComplete]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [done, lines.length]);
+  }, [handleKeyDown]);
 
   return (
     <AnimatePresence>
@@ -110,7 +113,7 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
             </motion.div>
           ))}
 
-          {lines.length >= bootLines.length - 1 && !done && (
+          {lines.length >= BOOT_LINES.length - 1 && !done && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -127,7 +130,7 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
             {'╚══════════════════════════════════════╝'}
           </div>
 
-          {lines.length >= bootLines.length - 1 && !done && (
+          {lines.length >= BOOT_LINES.length - 1 && !done && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
