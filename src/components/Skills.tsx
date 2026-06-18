@@ -1,57 +1,123 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { skills } from '../constants/data';
 import { iconMap } from '../constants/iconMap';
+import GlassCard from '../components/GlassCard';
+import AnimatedSection from '../components/AnimatedSection';
+
+const skillDescriptions: Record<string, string> = {
+  JavaScript: 'Dynamic web interactivity',
+  TypeScript: 'Type-safe development',
+  React: 'Component-based UI',
+  'Node.js': 'Server-side runtime',
+  'CSS/SCSS': 'Styling & animations',
+  'Next.js': 'Full-stack React framework',
+  Python: 'Data science & automation',
+  Docker: 'Containerization',
+};
+
+const otherTech = [
+  'Git', 'Figma', 'AWS', 'Pandas', 'Scikit-learn', 'TensorFlow', 'PyTorch', 'Tableau', 'Solidity', 'GraphQL', 'MongoDB', 'PostgreSQL',
+  'Firebase', 'Docker', 'Next.js', 'Express', 'PHP', 'Laravel', 'MySQL',
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+  },
+};
+
+const tagContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 },
+  },
+};
+
+const tagVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+  },
+};
 
 const Skills: React.FC = () => {
   const getIcon = (iconName: string) => {
     const Icon = iconMap[iconName as keyof typeof iconMap];
-    return Icon ? <Icon className="text-accent w-6 h-6" /> : null;
+    return Icon ? <Icon className="w-10 h-10 text-accent" /> : null;
   };
 
-
   return (
-    <section id="skills" className="bg-background relative py-20">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute bottom-40 left-20 w-72 h-72 bg-cta/5 rounded-full filter blur-3xl"></div>
-      </div>
+    <section id="skills" className="bg-background relative overflow-hidden section-padding">
+      <div className="absolute bottom-0 left-20 w-72 h-72 bg-cta/5 rounded-full filter blur-3xl" />
 
       <div className="section-container relative z-10">
-        <h2 className="section-title">My Skills</h2>
+        <AnimatedSection>
+          <p className="section-subtitle">EXPERTISE</p>
+          <h2 className="section-title">My Skills</h2>
+        </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+        >
           {skills.map((skill) => (
-            <div
-              key={skill.name}
-              className="bg-background border border-primary/20 rounded-lg p-6 hover:border-accent/40 transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,137,6,0.1)]"
-            >
-              <div className="flex items-center m-3">
-                <div className="mr-4">
-                  {getIcon(skill.icon)}
-                </div>
-                <h3 className="text-xl font-semibold">{skill.name}</h3>
-              </div>
-
-
-            </div>
+            <motion.div key={skill.name} variants={itemVariants}>
+              <GlassCard className="p-6 h-full flex flex-col items-center text-center gap-3">
+                <div className="mb-1">{getIcon(skill.icon)}</div>
+                <h3 className="text-lg font-semibold text-text">{skill.name}</h3>
+                <p className="text-sm text-primary">{skillDescriptions[skill.name]}</p>
+              </GlassCard>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="mt-16 p-8 bg-background border border-primary/20 rounded-lg">
-          <h3 className="text-2xl font-bold mb-6 text-center">Other Technologies I Work With</h3>
-          <div className="flex flex-wrap justify-center gap-4">
-            {[
-              'Git', 'Figma', 'AWS', 'Pandas', 'Scikit-learn', 'TensorFlow', 'PyTorch', 'Tableau', 'Solidity', 'GraphQL', 'MongoDB', 'PostgreSQL',
-              'Firebase', 'Docker', 'Next.js', 'Express', 'PHP', 'Laravel', 'MySQL'
-            ].map((tech) => (
-              <span
-                key={tech}
-                className="px-4 py-2 bg-background border border-primary/30 rounded-full text-primary hover:border-accent hover:text-accent transition-colors duration-300"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-        </div>
+        {/* Other Technologies */}
+        <motion.div
+          className="mt-12 sm:mt-16"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+        >
+          <GlassCard className="p-6 sm:p-8" hover={false}>
+            <h3 className="text-xl sm:text-2xl font-bold mb-6 text-center text-text">Other Technologies</h3>
+            <motion.div
+              className="flex flex-wrap justify-center gap-3"
+              variants={tagContainerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-100px' }}
+            >
+              {otherTech.map((tech) => (
+                <motion.span
+                  key={tech}
+                  variants={tagVariants}
+                  className="px-4 py-2 bg-surface border border-white/[0.08] rounded-full text-sm text-primary hover:border-accent/40 hover:text-accent transition-all duration-300 cursor-default"
+                >
+                  {tech}
+                </motion.span>
+              ))}
+            </motion.div>
+          </GlassCard>
+        </motion.div>
       </div>
     </section>
   );
