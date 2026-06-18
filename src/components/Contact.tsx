@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { socialLinks } from '../constants/data';
@@ -107,11 +107,71 @@ const Contact: React.FC = () => {
     },
   ];
 
+  // Magnetic hover handlers
+  const handleMagneticMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (window.matchMedia('(hover: none)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const distanceX = e.clientX - centerX;
+    const distanceY = e.clientY - centerY;
+    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    const radius = 80;
+    const strength = 0.4;
+
+    if (distance < radius) {
+      const factor = 1 - distance / radius;
+      el.style.transform = `translate(${distanceX * strength * factor}px, ${distanceY * strength * factor}px)`;
+      el.style.transition = 'transform 0.15s ease-out';
+    } else {
+      el.style.transform = 'translate(0, 0)';
+      el.style.transition = 'transform 0.3s ease-out';
+    }
+  }, []);
+
+  const handleMagneticLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transform = 'translate(0, 0)';
+    e.currentTarget.style.transition = 'transform 0.3s ease-out';
+  }, []);
+
+  // Ripple effect on button click
+  const createRipple = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = e.currentTarget;
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+    ripple.style.width = `${size}px`;
+    ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.position = 'absolute';
+    ripple.style.borderRadius = '50%';
+    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+    ripple.style.transform = 'scale(0)';
+    ripple.style.opacity = '1';
+    ripple.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+    ripple.style.pointerEvents = 'none';
+    button.style.position = 'relative';
+    button.style.overflow = 'hidden';
+    button.appendChild(ripple);
+
+    requestAnimationFrame(() => {
+      ripple.style.transform = 'scale(2.5)';
+      ripple.style.opacity = '0';
+    });
+
+    setTimeout(() => ripple.remove(), 600);
+  }, []);
+
   return (
     <section id="contact" className="bg-background relative section-padding">
       {/* Gradient Orb */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute bottom-40 right-10 w-96 h-96 bg-accent/5 rounded-full filter blur-3xl" />
+        <div className="absolute bottom-40 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <div className="section-container relative z-10">
@@ -138,7 +198,11 @@ const Contact: React.FC = () => {
                   key={item.label}
                   className="flex items-center gap-4 p-4 bg-surface/80 border border-white/[0.08] rounded-xl backdrop-blur-sm"
                 >
-                  <div className="w-12 h-12 bg-surface border border-white/[0.08] rounded-lg flex items-center justify-center shrink-0">
+                  <div
+                    className="w-12 h-12 bg-surface border border-white/[0.08] rounded-lg flex items-center justify-center shrink-0"
+                    onMouseMove={handleMagneticMove}
+                    onMouseLeave={handleMagneticLeave}
+                  >
                     {item.icon}
                   </div>
                   <div>
@@ -161,6 +225,28 @@ const Contact: React.FC = () => {
                     rel="noopener noreferrer"
                     className="w-11 h-11 bg-surface border border-white/[0.08] rounded-lg flex items-center justify-center text-primary hover:border-accent/40 hover:text-accent transition-all duration-300"
                     aria-label={link.name}
+                    onMouseMove={(e) => {
+                      if (window.matchMedia('(hover: none)').matches) return;
+                      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                      const el = e.currentTarget;
+                      const rect = el.getBoundingClientRect();
+                      const centerX = rect.left + rect.width / 2;
+                      const centerY = rect.top + rect.height / 2;
+                      const distanceX = e.clientX - centerX;
+                      const distanceY = e.clientY - centerY;
+                      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+                      const radius = 80;
+                      const strength = 0.4;
+                      if (distance < radius) {
+                        const factor = 1 - distance / radius;
+                        el.style.transform = `translate(${distanceX * strength * factor}px, ${distanceY * strength * factor}px)`;
+                        el.style.transition = 'transform 0.15s ease-out';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translate(0, 0)';
+                      e.currentTarget.style.transition = 'transform 0.3s ease-out';
+                    }}
                   >
                     {getIcon(link.icon)}
                   </a>
@@ -183,74 +269,95 @@ const Contact: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <motion.div custom={0} variants={formFieldVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                    <label htmlFor="name" className="block text-sm font-medium text-primary mb-2">
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all duration-300"
-                      placeholder="John Doe"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        placeholder=" "
+                        className="peer w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 focus:shadow-[0_0_20px_rgba(255,107,53,0.1)] transition-all duration-300 pt-5"
+                      />
+                      <label
+                        htmlFor="name"
+                        className="absolute left-4 top-3 text-sm text-muted transition-all duration-300 peer-focus:top-1 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+                      >
+                        Your Name
+                      </label>
+                    </div>
                   </motion.div>
 
                   <motion.div custom={1} variants={formFieldVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                    <label htmlFor="email" className="block text-sm font-medium text-primary mb-2">
-                      Your Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all duration-300"
-                      placeholder="john@example.com"
-                    />
+                    <div className="relative">
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        placeholder=" "
+                        className="peer w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 focus:shadow-[0_0_20px_rgba(255,107,53,0.1)] transition-all duration-300 pt-5"
+                      />
+                      <label
+                        htmlFor="email"
+                        className="absolute left-4 top-3 text-sm text-muted transition-all duration-300 peer-focus:top-1 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+                      >
+                        Your Email
+                      </label>
+                    </div>
                   </motion.div>
                 </div>
 
                 <motion.div custom={2} variants={formFieldVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                  <label htmlFor="subject" className="block text-sm font-medium text-primary mb-2">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all duration-300"
-                    placeholder="Project Inquiry"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      placeholder=" "
+                      className="peer w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 focus:shadow-[0_0_20px_rgba(255,107,53,0.1)] transition-all duration-300 pt-5"
+                    />
+                    <label
+                      htmlFor="subject"
+                      className="absolute left-4 top-3 text-sm text-muted transition-all duration-300 peer-focus:top-1 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+                    >
+                      Subject
+                    </label>
+                  </div>
                 </motion.div>
 
                 <motion.div custom={3} variants={formFieldVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                  <label htmlFor="message" className="block text-sm font-medium text-primary mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all duration-300 resize-none"
-                    placeholder="Tell me about your project..."
-                  />
+                  <div className="relative">
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={5}
+                      placeholder=" "
+                      className="peer w-full bg-background/50 border border-white/[0.08] rounded-lg px-4 py-3 text-text focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50 focus:shadow-[0_0_20px_rgba(255,107,53,0.1)] transition-all duration-300 pt-5 resize-none"
+                    />
+                    <label
+                      htmlFor="message"
+                      className="absolute left-4 top-3 text-sm text-muted transition-all duration-300 peer-focus:top-1 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+                    >
+                      Message
+                    </label>
+                  </div>
                 </motion.div>
 
                 <motion.div custom={4} variants={formFieldVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                   <button
                     type="submit"
                     disabled={isSubmitting}
+                    onClick={createRipple}
                     className={`btn btn-primary w-full mt-2 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     {isSubmitting ? (

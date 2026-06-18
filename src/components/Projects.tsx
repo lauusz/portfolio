@@ -27,6 +27,25 @@ const itemVariants = {
   },
 };
 
+const handleTiltMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  if (window.matchMedia('(hover: none)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const cx = rect.width / 2;
+  const cy = rect.height / 2;
+  const rotateX = ((y - cy) / cy) * -8;
+  const rotateY = ((x - cx) / cx) * 8;
+  e.currentTarget.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  e.currentTarget.style.transition = 'transform 0.1s ease-out';
+};
+
+const handleTiltLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+  e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+  e.currentTarget.style.transition = 'transform 0.5s ease-out';
+};
+
 const Projects: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('All');
 
@@ -40,8 +59,8 @@ const Projects: React.FC = () => {
     <section id="projects" className="bg-background relative section-padding">
       {/* Gradient Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-accent/5 rounded-full filter blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-cta/5 rounded-full filter blur-3xl" />
+        <div className="absolute top-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-cta/5 rounded-full blur-3xl" />
       </div>
 
       <div className="section-container relative z-10">
@@ -79,7 +98,7 @@ const Projects: React.FC = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
@@ -92,74 +111,80 @@ const Projects: React.FC = () => {
                 exit={{ opacity: 0, y: 20, scale: 0.95, transition: { duration: 0.3 } }}
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               >
-                <GlassCard className="group overflow-hidden hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(255,107,53,0.15)]">
-                  {/* Image Area */}
-                  <div className="relative aspect-video overflow-hidden rounded-t-xl">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-                    {/* Category Badge */}
-                    <div className="absolute bottom-4 left-4">
-                      <span className="px-3 py-1 bg-accent/90 text-white text-xs rounded-full font-medium">
-                        {project.category}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Content Area */}
-                  <div className="p-5 sm:p-6">
-                    <h3 className="text-xl font-bold text-text group-hover:text-accent transition-colors duration-300">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-primary mt-2 line-clamp-3">
-                      {project.description}
-                    </p>
-
-                    {/* Tech Tags */}
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {project.technologies.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-background/80 border border-white/[0.08] rounded-md text-xs text-muted"
-                        >
-                          {tech}
+                <div
+                  onMouseMove={handleTiltMove}
+                  onMouseLeave={handleTiltLeave}
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <GlassCard className="group overflow-hidden hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(255,107,53,0.15)]">
+                    {/* Image Area */}
+                    <div className="relative aspect-video overflow-hidden rounded-t-xl">
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                      {/* Category Badge */}
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-3 py-1 bg-accent/90 text-white text-xs rounded-full font-medium">
+                          {project.category}
                         </span>
-                      ))}
+                      </div>
                     </div>
 
-                    {/* Links */}
-                    <div className="flex gap-4 mt-5 pt-4 border-t border-white/[0.08]">
-                      {project.demoUrl && (
-                        <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-sm text-primary hover:text-accent transition-colors duration-300"
-                        >
-                          <ExternalLink size={16} />
-                          <span>Live Demo</span>
-                        </a>
-                      )}
+                    {/* Content Area */}
+                    <div className="p-5 sm:p-6">
+                      <h3 className="text-xl font-bold text-text group-hover:text-accent transition-colors duration-300">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-primary mt-2 line-clamp-3">
+                        {project.description}
+                      </p>
 
-                      {project.codeUrl && (
-                        <a
-                          href={project.codeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-sm text-primary hover:text-accent transition-colors duration-300"
-                        >
-                          <Github size={16} />
-                          <span>Source Code</span>
-                        </a>
-                      )}
+                      {/* Tech Tags */}
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {project.technologies.map((tech, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-background/80 border border-white/[0.08] rounded-md text-xs text-muted"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Links */}
+                      <div className="flex gap-4 mt-5 pt-4 border-t border-white/[0.08]">
+                        {project.demoUrl && (
+                          <a
+                            href={project.demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-sm text-primary hover:text-accent transition-colors duration-300"
+                          >
+                            <ExternalLink size={16} />
+                            <span>Live Demo</span>
+                          </a>
+                        )}
+
+                        {project.codeUrl && (
+                          <a
+                            href={project.codeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-sm text-primary hover:text-accent transition-colors duration-300"
+                          >
+                            <Github size={16} />
+                            <span>Source Code</span>
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </GlassCard>
+                  </GlassCard>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
