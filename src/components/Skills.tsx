@@ -13,14 +13,14 @@ const skillDescriptions: Record<string, string> = {
 };
 
 const skillWidths: Record<string, number> = {
-  JavaScript: 92,
-  TypeScript: 88,
-  React: 90,
-  'Node.js': 85,
-  'CSS/SCSS': 87,
-  'Next.js': 82,
-  Python: 80,
-  Docker: 78,
+  JavaScript: 100,
+  TypeScript: 100,
+  React: 100,
+  'Node.js': 100,
+  'CSS/SCSS': 100,
+  'Next.js': 100,
+  Python: 100,
+  Docker: 100,
 };
 
 const otherTech = [
