@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { skills } from '../constants/data';
 import { iconMap } from '../constants/iconMap';
 import GlassCard from '../components/GlassCard';
-import AnimatedSection from '../components/AnimatedSection';
 
 const skillDescriptions: Record<string, string> = {
   JavaScript: 'Dynamic web interactivity',
@@ -22,9 +21,8 @@ const otherTech = [
 ];
 
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: { staggerChildren: 0.1 },
   },
 };
@@ -39,9 +37,8 @@ const itemVariants = {
 };
 
 const tagContainerVariants = {
-  hidden: { opacity: 0 },
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: { staggerChildren: 0.05 },
   },
 };
@@ -55,6 +52,30 @@ const tagVariants = {
   },
 };
 
+const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  if (window.matchMedia('(hover: none)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const cx = rect.width / 2;
+  const cy = rect.height / 2;
+  const rotateX = ((y - cy) / cy) * -10;
+  const rotateY = ((x - cx) / cx) * 10;
+  e.currentTarget.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+};
+
+const handleCardMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+  e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+  e.currentTarget.style.transition = 'transform 0.5s ease-out';
+};
+
+const handleCardMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+  if (window.matchMedia('(hover: none)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  e.currentTarget.style.transition = 'transform 0.1s ease-out';
+};
+
 const Skills: React.FC = () => {
   const getIcon = (iconName: string) => {
     const Icon = iconMap[iconName as keyof typeof iconMap];
@@ -63,28 +84,52 @@ const Skills: React.FC = () => {
 
   return (
     <section id="skills" className="bg-background relative overflow-hidden section-padding">
-      <div className="absolute bottom-0 left-20 w-72 h-72 bg-cta/5 rounded-full filter blur-3xl" />
+      {/* Background orb */}
+      <div className="absolute bottom-0 left-20 w-72 h-72 bg-cta/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="section-container relative z-10">
-        <AnimatedSection>
-          <p className="section-subtitle">EXPERTISE</p>
-          <h2 className="section-title">My Skills</h2>
-        </AnimatedSection>
-
+        {/* Section Header */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <p className="text-muted uppercase tracking-wider text-sm font-medium">EXPERTISE</p>
+          <h2 className="text-text text-2xl sm:text-3xl md:text-4xl font-bold relative inline-block mb-8 sm:mb-12">
+            My Skills
+            <span className="absolute -bottom-2 left-0 w-2/3 h-1 bg-accent rounded-full" />
+          </h2>
+        </motion.div>
+
+        {/* Main Skills Grid */}
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
         >
           {skills.map((skill) => (
-            <motion.div key={skill.name} variants={itemVariants}>
-              <GlassCard className="p-6 h-full flex flex-col items-center text-center gap-3">
-                <div className="mb-1">{getIcon(skill.icon)}</div>
-                <h3 className="text-lg font-semibold text-text">{skill.name}</h3>
-                <p className="text-sm text-primary">{skillDescriptions[skill.name]}</p>
-              </GlassCard>
+            <motion.div
+              key={skill.name}
+              variants={itemVariants}
+              className="h-full"
+            >
+              <div
+                className="h-full group"
+                onMouseMove={handleCardMouseMove}
+                onMouseLeave={handleCardMouseLeave}
+                onMouseEnter={handleCardMouseEnter}
+              >
+                <GlassCard className="p-6 h-full flex flex-col items-center text-center gap-3">
+                  <div className="mb-1 group-hover:scale-110 transition-transform duration-300">
+                    {getIcon(skill.icon)}
+                  </div>
+                  <h3 className="text-lg font-semibold text-text">{skill.name}</h3>
+                  <p className="text-sm text-primary">{skillDescriptions[skill.name]}</p>
+                </GlassCard>
+              </div>
             </motion.div>
           ))}
         </motion.div>
