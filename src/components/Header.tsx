@@ -82,17 +82,6 @@ const Header = () => {
             })}
           </nav>
 
-          {/* Divider between nav and mobile toggle */}
-          <div className="hidden md:block w-px h-6 bg-border/60 mx-1" />
-
-          {/* CTA button inside pill */}
-          <a
-            href="#contact"
-            className="hidden md:block font-sans text-sm px-4 py-2 rounded-full bg-primary text-white hover:bg-accent transition-colors duration-300"
-          >
-            Hire Me
-          </a>
-
           {/* Mobile: Logo (small) */}
           <a href="#home" className="md:hidden font-sans text-sm font-semibold text-primary px-3">
             N<span className="text-accent">.</span>
@@ -127,13 +116,6 @@ const Header = () => {
                 {link.name}
               </a>
             ))}
-            <a
-              href="#contact"
-              onClick={() => setIsOpen(false)}
-              className="font-sans text-sm font-medium px-6 py-2.5 rounded-full bg-primary text-white hover:bg-accent transition-colors mt-2"
-            >
-              Hire Me
-            </a>
           </nav>
         </div>
       </div>
