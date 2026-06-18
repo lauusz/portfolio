@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowDown } from 'lucide-react';
 
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
@@ -41,7 +40,7 @@ const Hero = () => {
   return (
     <section id="home" className="min-h-[100dvh] flex flex-col justify-center relative pt-16 md:pt-20">
       <div className="section-container">
-        <div className="max-w-3xl">
+        <div className="max-w-3xl relative">
           {/* Label */}
           <p className="font-sans text-sm text-accent font-medium uppercase tracking-widest mb-6">
             UI/UX Designer & Developer
@@ -79,13 +78,15 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — positioned at bottom-right, away from chatbot button */}
       <a
         href="#about"
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted hover:text-accent transition-colors"
+        className="absolute bottom-8 right-6 sm:bottom-12 sm:right-12 flex flex-col items-center gap-2 text-muted hover:text-accent transition-colors group"
       >
-        <span className="font-sans text-xs tracking-wider uppercase">Scroll</span>
-        <ArrowDown className="animate-bounce" size={16} />
+        <span className="font-sans text-[10px] tracking-[0.2em] uppercase opacity-60 group-hover:opacity-100 transition-opacity">Scroll</span>
+        <div className="w-px h-10 bg-border group-hover:bg-accent transition-colors relative">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-muted group-hover:bg-accent transition-colors" />
+        </div>
       </a>
     </section>
   );
