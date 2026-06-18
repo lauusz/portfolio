@@ -4,47 +4,42 @@ export default {
   theme: {
     extend: {
       colors: {
-        void: '#050505',
-        surface: '#0a0a0f',
-        'surface-elevated': '#111118',
-        primary: '#00f0ff',
-        secondary: '#ff2a6d',
-        accent: '#39ff14',
-        text: '#e8e8f0',
-        muted: '#555566',
-        border: '#1a1a25',
+        bg: '#FAFAFA',
+        surface: '#FFFFFF',
+        'surface-elevated': '#F5F5F5',
+        'surface-hover': '#F0F0F0',
+        primary: '#1A1A1A',
+        secondary: '#737373',
+        accent: '#B08968',
+        'accent-light': '#D4A574',
+        'accent-secondary': '#7B8F71',
+        text: '#1A1A1A',
+        muted: '#737373',
+        'text-secondary': '#999999',
+        border: '#E5E5E5',
+        'border-hover': '#D0D0D0',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
       },
       animation: {
-        'cursor-blink': 'blink 1s step-end infinite',
-        'rain': 'rain 20s linear infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite',
-        'glitch': 'glitch 0.3s ease-in-out',
+        'fade-up': 'fadeUp 0.6s ease-out forwards',
+        'fade-in': 'fadeIn 0.4s ease-out forwards',
+        'slide-up': 'slideUp 0.5s ease-out forwards',
       },
       keyframes: {
-        blink: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0' },
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
-        glow: {
-          '0%, 100%': { opacity: '0.5' },
-          '50%': { opacity: '1' },
-        },
-        glitch: {
-          '0%': { transform: 'translate(0)' },
-          '20%': { transform: 'translate(-2px, 2px)' },
-          '40%': { transform: 'translate(-2px, -2px)' },
-          '60%': { transform: 'translate(2px, 2px)' },
-          '80%': { transform: 'translate(2px, -2px)' },
-          '100%': { transform: 'translate(0)' },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },

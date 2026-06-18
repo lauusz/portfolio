@@ -11,18 +11,14 @@ import Footer from './components/Footer';
 
 function App() {
   useEffect(() => {
-    document.title = 'nikolaus@satria:~$ portfolio';
+    document.title = 'Nikolaus Satria — UI/UX Designer & Developer';
   }, []);
 
   return (
-    <div className="min-h-screen bg-void text-text overflow-x-hidden relative">
-      {/* Terminal Chatbot only */}
+    <div className="min-h-screen bg-bg text-primary overflow-x-hidden relative selection:bg-accent/20">
       <TerminalChatbot />
-
-      {/* Header */}
       <Header />
-
-      <main className="relative z-10">
+      <main className="relative">
         <Hero />
         <About />
         <Skills />
@@ -30,7 +26,6 @@ function App() {
         <Projects />
         <Contact />
       </main>
-
       <Footer />
     </div>
   );

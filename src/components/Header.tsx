@@ -37,22 +37,15 @@ const Header = () => {
   }, [isOpen]);
 
   return (
-    <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-16 md:h-20 ${isScrolled ? 'bg-void/90 border-b border-border' : 'bg-transparent'}`}>
+    <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-16 md:h-20 ${isScrolled ? 'bg-white/90 backdrop-blur-md border-b border-border' : 'bg-transparent'}`}>
       <div className="section-container h-full flex items-center justify-between">
-        {/* Logo — static, no per-character animation */}
-        <a href="#home" className="font-mono text-sm md:text-base text-primary flex items-center gap-1">
-          <span className="text-secondary">[</span>
-          <span className="text-accent">@</span>
-          <span>nikolaus</span>
-          <span className="text-muted">:</span>
-          <span>satria</span>
-          <span className="text-muted">:</span>
-          <span>~$</span>
-          <span className="text-secondary">]</span>
+        {/* Logo — clean, elegant */}
+        <a href="#home" className="font-sans text-lg font-semibold text-primary tracking-tight">
+          Nikolaus<span className="text-accent">.</span>
         </a>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        {/* Desktop Nav — clean, minimal links */}
+        <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => {
             const sectionId = link.path.replace('#', '');
             const isActive = activeSection === sectionId;
@@ -60,13 +53,9 @@ const Header = () => {
               <a
                 key={link.name}
                 href={link.path}
-                className={`font-mono text-xs px-4 py-2 transition-all duration-300 relative ${isActive ? 'text-primary' : 'text-muted hover:text-text'}`}
+                className={`font-sans text-sm transition-all duration-300 ${isActive ? 'text-primary font-medium' : 'text-muted hover:text-primary'}`}
               >
-                <span className="text-primary/50">./</span>
-                {link.name.toLowerCase()}
-                {isActive && (
-                  <span className="absolute bottom-0 left-4 right-4 h-[1px] bg-primary" style={{ boxShadow: '0 0 8px rgba(0, 240, 255, 0.6)' }} />
-                )}
+                {link.name}
               </a>
             );
           })}
@@ -78,19 +67,19 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu — simple CSS transition, no framer-motion */}
+      {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 top-16 md:hidden bg-void/98 z-40 flex flex-col items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 top-16 md:hidden bg-white/98 backdrop-blur-md z-40 flex flex-col items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       >
-        <nav className="flex flex-col items-center gap-6">
+        <nav className="flex flex-col items-center gap-8">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.path}
               onClick={() => setIsOpen(false)}
-              className="font-mono text-xl text-muted hover:text-primary transition-colors"
+              className="font-sans text-xl text-muted hover:text-primary transition-colors"
             >
-              <span className="text-primary/50">$</span> cd {link.name.toLowerCase()}
+              {link.name}
             </a>
           ))}
         </nav>

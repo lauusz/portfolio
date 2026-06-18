@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { mailtoLink, contactInfo } from '../constants/data';
-import { getContactIcon } from '../constants/contactIcons';
+import { contactInfo, mailtoLink } from '../constants/data';
+import { Mail, MapPin, CheckCircle, Send, Copy, Check } from 'lucide-react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -22,98 +22,104 @@ const Contact = () => {
   return (
     <section id="contact" className="section-padding relative">
       <div className="section-container">
-        <div className="mb-12">
-          <p className="font-mono text-sm text-muted mb-2">
-            <span className="text-primary">$</span> ./contact --init
+        <div className="mb-16">
+          <p className="font-sans text-sm text-accent font-medium uppercase tracking-widest mb-3">
+            Let's Connect
           </p>
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-text">
-            GET IN <span className="text-primary">TOUCH</span>
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+            Get in
+            <br />
+            <span className="text-muted">Touch</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Contact info */}
-          <div className="terminal-window p-6 sm:p-8">
-            <p className="font-mono text-xs text-muted mb-6">
-              <span className="text-primary">$</span> cat contact_info.txt
-            </p>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <span className="text-primary">{getContactIcon('email')}</span>
-                <div>
-                  <p className="font-mono text-xs text-muted">Email</p>
-                  <button
-                    onClick={handleCopyEmail}
-                    className="font-mono text-sm text-text hover:text-primary transition-colors"
-                  >
-                    {contactInfo.email}
-                  </button>
+          <div className="space-y-8">
+            <div className="card p-6 sm:p-8">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-surface-elevated rounded-full flex items-center justify-center text-accent">
+                    <Mail size={18} />
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs text-muted uppercase tracking-wider">Email</p>
+                    <button
+                      onClick={handleCopyEmail}
+                      className="font-sans text-sm text-primary hover:text-accent transition-colors flex items-center gap-2"
+                    >
+                      {contactInfo.email}
+                      {copied ? <Check size={14} className="text-accent-secondary" /> : <Copy size={14} className="text-muted" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-accent">{getContactIcon('location')}</span>
-                <div>
-                  <p className="font-mono text-xs text-muted">Location</p>
-                  <p className="font-mono text-sm text-text">{contactInfo.location}</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-surface-elevated rounded-full flex items-center justify-center text-accent-secondary">
+                    <MapPin size={18} />
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs text-muted uppercase tracking-wider">Location</p>
+                    <p className="font-sans text-sm text-primary">{contactInfo.location}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-secondary">{getContactIcon('status')}</span>
-                <div>
-                  <p className="font-mono text-xs text-muted">Status</p>
-                  <p className="font-mono text-sm text-accent">{contactInfo.status}</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-surface-elevated rounded-full flex items-center justify-center text-accent">
+                    <CheckCircle size={18} />
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs text-muted uppercase tracking-wider">Status</p>
+                    <p className="font-sans text-sm text-accent-secondary">{contactInfo.status}</p>
+                  </div>
                 </div>
               </div>
             </div>
-            {copied && (
-              <p className="font-mono text-xs text-primary mt-4">[copied to clipboard]</p>
-            )}
+
+            <p className="font-sans text-base text-muted leading-relaxed">
+              I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Let's build something amazing together.
+            </p>
           </div>
 
           {/* Contact form */}
-          <div className="terminal-window p-6 sm:p-8">
-            <p className="font-mono text-xs text-muted mb-6">
-              <span className="text-primary">$</span> nano message.txt
-            </p>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="card p-6 sm:p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="font-mono text-xs text-muted block mb-2">Name:</label>
+                <label className="label">Your Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-surface border border-border p-3 font-mono text-sm text-text focus:border-primary focus:outline-none transition-colors"
-                  placeholder="your_name"
+                  className="input-field"
+                  placeholder="John Doe"
                   required
                 />
               </div>
               <div>
-                <label className="font-mono text-xs text-muted block mb-2">Email:</label>
+                <label className="label">Email Address</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-surface border border-border p-3 font-mono text-sm text-text focus:border-primary focus:outline-none transition-colors"
-                  placeholder="your@email.com"
+                  className="input-field"
+                  placeholder="john@example.com"
                   required
                 />
               </div>
               <div>
-                <label className="font-mono text-xs text-muted block mb-2">Message:</label>
+                <label className="label">Message</label>
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={4}
-                  className="w-full bg-surface border border-border p-3 font-mono text-sm text-text focus:border-primary focus:outline-none transition-colors resize-none"
-                  placeholder="Enter your message..."
+                  rows={5}
+                  className="input-field resize-none"
+                  placeholder="Tell me about your project..."
                   required
                 />
               </div>
               <button
                 type="submit"
-                className="w-full border border-primary text-primary px-6 py-3 font-mono text-sm hover:bg-primary hover:text-void transition-colors"
+                className="btn-accent w-full flex items-center justify-center gap-2"
               >
-                [SEND_MESSAGE]
+                <Send size={16} /> Send Message
               </button>
             </form>
           </div>

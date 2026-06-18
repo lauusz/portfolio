@@ -14,24 +14,26 @@ const Projects = () => {
   return (
     <section id="projects" className="section-padding relative">
       <div className="section-container">
-        <div className="mb-12">
-          <p className="font-mono text-sm text-muted mb-2">
-            <span className="text-primary">$</span> ls -la projects/
+        <div className="mb-16">
+          <p className="font-sans text-sm text-accent font-medium uppercase tracking-widest mb-3">
+            Selected Work
           </p>
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-text">
-            FEATURED <span className="text-primary">PROJECTS</span>
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+            Featured
+            <br />
+            <span className="text-muted">Projects</span>
           </h2>
         </div>
 
         {/* Category tabs */}
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="flex flex-wrap gap-3 mb-10">
           {allCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`font-mono text-sm px-4 py-2 border transition-all duration-300 ${
+              className={`font-sans text-sm px-5 py-2.5 rounded-full border transition-all duration-300 ${
                 activeCategory === cat
-                  ? 'border-primary text-primary bg-primary/10'
+                  ? 'border-primary text-primary bg-primary/5'
                   : 'border-border text-muted hover:border-primary hover:text-primary'
               }`}
             >
@@ -41,28 +43,28 @@ const Projects = () => {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filtered.map((project) => (
             <div
               key={project.id}
-              className="terminal-window group hover:-translate-y-1 hover:border-primary/30 transition-all duration-300"
+              className="card card-hover overflow-hidden group"
             >
-              <div className="relative aspect-video overflow-hidden border-b border-border">
+              <div className="relative aspect-[16/10] overflow-hidden">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-void/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
                   {project.codeUrl && (
                     <a
                       href={project.codeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-xs border border-primary text-primary px-4 py-2 hover:bg-primary hover:text-void transition-colors flex items-center gap-2"
+                      className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:bg-accent hover:text-white transition-colors"
                     >
-                      <Github size={12} /> CODE
+                      <Github size={18} />
                     </a>
                   )}
                   {project.demoUrl && (
@@ -70,24 +72,24 @@ const Projects = () => {
                       href={project.demoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-xs border border-accent text-accent px-4 py-2 hover:bg-accent hover:text-void transition-colors flex items-center gap-2"
+                      className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:bg-accent hover:text-white transition-colors"
                     >
-                      <ExternalLink size={12} /> DEMO
+                      <ExternalLink size={18} />
                     </a>
                   )}
                 </div>
               </div>
               <div className="p-6">
-                <p className="font-mono text-xs text-muted mb-2">
-                  <span className="text-primary">{project.id}</span> // {project.category}
+                <p className="font-sans text-xs text-accent font-medium uppercase tracking-wider mb-2">
+                  {project.category}
                 </p>
-                <h3 className="font-sans text-xl font-bold text-text mb-2">{project.title}</h3>
-                <p className="font-mono text-sm text-muted leading-relaxed mb-4">{project.description}</p>
+                <h3 className="font-sans text-xl font-bold text-primary mb-2">{project.title}</h3>
+                <p className="font-sans text-sm text-muted leading-relaxed mb-4">{project.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech) => (
                     <span
                       key={tech}
-                      className="font-mono text-xs px-2 py-1 border border-border text-muted"
+                      className="font-sans text-xs px-3 py-1 bg-surface-elevated text-muted rounded-full"
                     >
                       {tech}
                     </span>

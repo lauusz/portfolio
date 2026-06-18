@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowUp, Terminal } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { socialLinks } from '../constants/data';
 import * as LucideIcons from 'lucide-react';
 
@@ -15,27 +15,27 @@ const Footer = () => {
 
   const getIcon = (iconName: string) => {
     const Icon = (LucideIcons as any)[iconName];
-    return Icon ? <Icon className="text-muted" size={16} /> : null;
+    return Icon ? <Icon className="text-muted" size={18} /> : null;
   };
 
   return (
-    <footer className="bg-void border-t border-border">
-      <div className="section-container py-10 sm:py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2 font-mono text-sm">
-            <Terminal className="text-primary" size={18} />
-            <span className="text-primary">nikolaus@satria</span>
-            <span className="text-muted">:~$</span>
+    <footer className="bg-surface border-t border-border">
+      <div className="section-container py-12 sm:py-16">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-2">
+            <span className="font-sans text-lg font-semibold text-primary tracking-tight">
+              Nikolaus<span className="text-accent">.</span>
+            </span>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             {socialLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 border border-border flex items-center justify-center text-muted hover:border-primary hover:text-primary transition-all duration-300"
+                className="w-10 h-10 bg-surface-elevated rounded-full flex items-center justify-center text-muted hover:bg-accent hover:text-white transition-all duration-300"
                 aria-label={link.name}
               >
                 {getIcon(link.icon)}
@@ -44,16 +44,18 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-mono text-xs text-muted">
-            <span className="text-primary">{'>'}</span> &copy; {new Date().getFullYear()} Nikolaus Satria. All rights reserved.
+        <div className="divider mt-10 mb-6" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="font-sans text-xs text-muted">
+            &copy; {new Date().getFullYear()} Nikolaus Satria. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="font-mono text-xs text-muted hover:text-primary transition-colors">
-              privacy_policy
+            <a href="#" className="font-sans text-xs text-muted hover:text-primary transition-colors">
+              Privacy Policy
             </a>
-            <a href="#" className="font-mono text-xs text-muted hover:text-primary transition-colors">
-              terms_of_service
+            <a href="#" className="font-sans text-xs text-muted hover:text-primary transition-colors">
+              Terms of Service
             </a>
           </div>
         </div>
@@ -62,10 +64,9 @@ const Footer = () => {
       {/* Back to top */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-6 right-6 w-10 h-10 bg-void border border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-void transition-all duration-300 z-50 ${
+        className={`fixed bottom-6 right-6 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-accent transition-all duration-300 z-50 shadow-lg shadow-black/10 ${
           showBackToTop ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
-        style={{ boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)' }}
       >
         <ArrowUp size={16} />
       </button>
