@@ -62,4 +62,12 @@ export const socialLinks: SocialLink[] = [
   { name: 'Email', url: 'mailto:nikolaussatria@gmail.com', icon: 'Mail' },
 ];
 
+export const contactInfo = {
+  email: 'nikolaussatria@gmail.com',
+  location: 'Surabaya, Indonesia',
+  status: 'Available for work',
+};
+
+export const mailtoLink = 'mailto:nikolaussatria@gmail.com';
+
 export const categories = [...new Set(projects.map(project => project.category))];

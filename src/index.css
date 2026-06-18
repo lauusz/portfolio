@@ -128,37 +128,14 @@
   .terminal-window-dot.green { background-color: #39ff14; }
 
   .grid-bg {
-    background-image:
-      linear-gradient(rgba(26, 26, 37, 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(26, 26, 37, 0.3) 1px, transparent 1px);
-    background-size: 60px 60px;
+    background-image: radial-gradient(rgba(26, 26, 37, 0.5) 1px, transparent 1px);
+    background-size: 50px 50px;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-}
-
-/* Performance: content-visibility for off-screen sections (desktop only) */
-@media (min-width: 768px) {
-  section {
-    content-visibility: auto;
-    contain-intrinsic-size: 0 500px;
-  }
-}
-
-/* Performance: GPU acceleration for animated elements */
-.gpu-accelerated {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-/* Hide cursor on desktop when custom cursor is active */
-@media (hover: hover) {
-  body, a, button, [role="button"], input, textarea, label {
-    cursor: none !important;
   }
 }
 
@@ -173,8 +150,5 @@
   }
   html {
     scroll-behavior: auto;
-  }
-  section {
-    content-visibility: visible !important;
   }
 }

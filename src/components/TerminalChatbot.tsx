@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Send, X, Terminal, Minimize2 } from 'lucide-react';
 import { useSound } from '../hooks/useSound';
 
@@ -38,12 +37,26 @@ const TerminalChatbot = () => {
   ]);
   const [input, setInput] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { playTyping, playClick, playBeep } = useSound();
+  const { playClick, playBeep } = useSound();
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    playClick();
+  };
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -61,7 +74,7 @@ const TerminalChatbot = () => {
       if (userText === 'exit') {
         playBeep();
         setMessages((prev) => [...prev, { role: 'system', text: response }]);
-        setTimeout(() => setIsOpen(false), 1000);
+        setTimeout(() => handleClose(), 1000);
         return;
       }
       if (userText === 'clear') {
@@ -83,96 +96,90 @@ const TerminalChatbot = () => {
     <>
       {/* Toggle Button */}
       {!isOpen && (
-        <motion.button
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          onClick={() => { setIsOpen(true); playClick(); }}
+        <button
+          onClick={handleOpen}
           className="fixed bottom-6 left-6 z-50 w-12 h-12 border border-primary bg-void flex items-center justify-center text-primary hover:bg-primary hover:text-void transition-all duration-300"
           style={{ boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)' }}
           title="Terminal Chat"
         >
           <Terminal size={20} />
-        </motion.button>
+        </button>
       )}
 
       {/* Chat Window */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
-            className={`fixed bottom-6 left-6 z-50 terminal-window flex flex-col ${isMinimized ? 'w-64 h-12' : 'w-80 sm:w-96 h-96'}`}
-            style={{ boxShadow: '0 0 30px rgba(0, 240, 255, 0.15)' }}
-          >
-            {/* Header */}
-            <div className="terminal-window-header flex-shrink-0">
-              <div className="terminal-window-dot red" />
-              <div className="terminal-window-dot yellow" />
-              <div className="terminal-window-dot green" />
-              <span className="font-mono text-xs text-muted ml-2">chatbot.sh</span>
-              <div className="flex-1" />
-              <button
-                onClick={() => setIsMinimized(!isMinimized)}
-                className="text-muted hover:text-primary transition-colors mr-2"
-              >
-                <Minimize2 size={12} />
-              </button>
-              <button
-                onClick={() => { setIsOpen(false); playClick(); }}
-                className="text-muted hover:text-secondary transition-colors"
-              >
-                <X size={12} />
-              </button>
-            </div>
+      {isOpen && (
+        <div
+          className={`fixed bottom-6 left-6 z-50 terminal-window flex flex-col transition-all duration-300 ${
+            isClosing ? 'opacity-0 translate-y-5 scale-95' : 'opacity-100 translate-y-0 scale-100'
+          } ${isMinimized ? 'w-64 h-12' : 'w-80 sm:w-96 h-96'}`}
+          style={{ boxShadow: '0 0 30px rgba(0, 240, 255, 0.15)' }}
+        >
+          {/* Header */}
+          <div className="terminal-window-header flex-shrink-0">
+            <div className="terminal-window-dot red" />
+            <div className="terminal-window-dot yellow" />
+            <div className="terminal-window-dot green" />
+            <span className="font-mono text-xs text-muted ml-2">chatbot.sh</span>
+            <div className="flex-1" />
+            <button
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="text-muted hover:text-primary transition-colors mr-2"
+            >
+              <Minimize2 size={12} />
+            </button>
+            <button
+              onClick={() => { handleClose(); playClick(); }}
+              className="text-muted hover:text-secondary transition-colors"
+            >
+              <X size={12} />
+            </button>
+          </div>
 
-            {!isMinimized && (
-              <>
-                {/* Messages */}
-                <div
-                  ref={scrollRef}
-                  className="flex-1 overflow-y-auto p-4 space-y-2"
+          {!isMinimized && (
+            <>
+              {/* Messages */}
+              <div
+                ref={scrollRef}
+                className="flex-1 overflow-y-auto p-4 space-y-2"
+              >
+                {messages.map((msg, i) => (
+                  <div key={i}>
+                    {msg.role === 'user' ? (
+                      <div className="font-mono text-xs text-primary">
+                        <span className="text-secondary">$</span> {msg.text}
+                      </div>
+                    ) : (
+                      <div className="font-mono text-xs text-muted whitespace-pre-line">
+                        <span className="text-primary">{'>'}</span> {msg.text}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Input */}
+              <div className="p-3 border-t border-border flex items-center gap-2">
+                <span className="text-primary text-xs font-mono">$</span>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1 bg-transparent font-mono text-xs text-text placeholder:text-muted focus:outline-none"
+                  placeholder="type command..."
+                  autoFocus
+                />
+                <button
+                  onClick={handleSend}
+                  className="text-muted hover:text-primary transition-colors"
                 >
-                  {messages.map((msg, i) => (
-                    <div key={i}>
-                      {msg.role === 'user' ? (
-                        <div className="font-mono text-xs text-primary">
-                          <span className="text-secondary">$</span> {msg.text}
-                        </div>
-                      ) : (
-                        <div className="font-mono text-xs text-muted whitespace-pre-line">
-                          <span className="text-primary">{'>'}</span> {msg.text}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Input */}
-                <div className="p-3 border-t border-border flex items-center gap-2">
-                  <span className="text-primary text-xs font-mono">$</span>
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="flex-1 bg-transparent font-mono text-xs text-text placeholder:text-muted focus:outline-none"
-                    placeholder="type command..."
-                    autoFocus
-                  />
-                  <button
-                    onClick={handleSend}
-                    className="text-muted hover:text-primary transition-colors"
-                  >
-                    <Send size={14} />
-                  </button>
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <Send size={14} />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 };

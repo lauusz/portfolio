@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { navLinks } from '../constants/data';
 
@@ -37,25 +36,18 @@ const Header = () => {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  const logoChars = 'nikolaus@satria:~$'.split('');
-
   return (
-    <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-16 md:h-20 ${isScrolled ? 'bg-void/90 backdrop-blur-sm border-b border-border' : 'bg-transparent'}`}>
+    <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-16 md:h-20 ${isScrolled ? 'bg-void/90 border-b border-border' : 'bg-transparent'}`}>
       <div className="section-container h-full flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo — static, no per-character animation */}
         <a href="#home" className="font-mono text-sm md:text-base text-primary flex items-center gap-1">
           <span className="text-secondary">[</span>
-          {logoChars.map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03, duration: 0.3 }}
-              className={char === '@' ? 'text-accent' : ''}
-            >
-              {char}
-            </motion.span>
-          ))}
+          <span className="text-accent">@</span>
+          <span>nikolaus</span>
+          <span className="text-muted">:</span>
+          <span>satria</span>
+          <span className="text-muted">:</span>
+          <span>~$</span>
           <span className="text-secondary">]</span>
         </a>
 
@@ -73,11 +65,7 @@ const Header = () => {
                 <span className="text-primary/50">./</span>
                 {link.name.toLowerCase()}
                 {isActive && (
-                  <motion.span
-                    layoutId="nav-indicator"
-                    className="absolute bottom-0 left-4 right-4 h-[1px] bg-primary"
-                    style={{ boxShadow: '0 0 8px rgba(0, 240, 255, 0.6)' }}
-                  />
+                  <span className="absolute bottom-0 left-4 right-4 h-[1px] bg-primary" style={{ boxShadow: '0 0 8px rgba(0, 240, 255, 0.6)' }} />
                 )}
               </a>
             );
@@ -90,35 +78,23 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }}
-            animate={{ opacity: 1, clipPath: 'inset(0 0 0% 0)' }}
-            exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }}
-            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            className="fixed inset-0 top-16 md:hidden bg-void/98 z-40 flex flex-col items-center justify-center"
-          >
-            <nav className="flex flex-col items-center gap-6">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.name}
-                  href={link.path}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ delay: i * 0.08 }}
-                  onClick={() => setIsOpen(false)}
-                  className="font-mono text-xl text-muted hover:text-primary transition-colors"
-                >
-                  <span className="text-primary/50">$</span> cd {link.name.toLowerCase()}
-                </motion.a>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Mobile Menu — simple CSS transition, no framer-motion */}
+      <div
+        className={`fixed inset-0 top-16 md:hidden bg-void/98 z-40 flex flex-col items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      >
+        <nav className="flex flex-col items-center gap-6">
+          {navLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.path}
+              onClick={() => setIsOpen(false)}
+              className="font-mono text-xl text-muted hover:text-primary transition-colors"
+            >
+              <span className="text-primary/50">$</span> cd {link.name.toLowerCase()}
+            </a>
+          ))}
+        </nav>
+      </div>
     </header>
   );
 };
