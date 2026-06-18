@@ -2,9 +2,8 @@ import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ParticleBackground from './components/ParticleBackground';
+import TerminalRain from './components/TerminalRain';
 import CustomCursor from './components/CustomCursor';
-import MouseSpotlight from './components/MouseSpotlight';
 import ScrollProgress from './components/ScrollProgress';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -17,10 +16,8 @@ import Footer from './components/Footer';
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  const lenisRef = useRef<Lenis | null>(null);
-
   useEffect(() => {
-    document.title = 'Nikolaus Satria | Portfolio';
+    document.title = 'nikolaus@satria:~$ portfolio';
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -28,13 +25,9 @@ function App() {
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1,
       touchMultiplier: 2,
     });
 
-    lenisRef.current = lenis;
-
-    // Sync Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
     gsap.ticker.add((time) => {
@@ -42,7 +35,6 @@ function App() {
     });
     gsap.ticker.lagSmoothing(0);
 
-    // Global anchor click handler
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a[href^="#"]') as HTMLAnchorElement | null;
@@ -67,17 +59,19 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-text antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-void text-text overflow-x-hidden relative">
       {/* Global effects */}
-      <ParticleBackground />
-      <MouseSpotlight />
+      <TerminalRain />
       <CustomCursor />
       <ScrollProgress />
+
+      {/* Grid overlay */}
+      <div className="fixed inset-0 grid-bg pointer-events-none z-[1] opacity-30" />
 
       {/* Header */}
       <Header />
 
-      <main>
+      <main className="relative z-10">
         <Hero />
         <About />
         <Skills />

@@ -4,39 +4,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0a0a0f',
-        surface: '#12121a',
-        'surface-elevated': '#1a1a25',
-        primary: '#a0a0b0',
-        accent: '#ff6b35',
-        'accent-glow': 'rgba(255, 107, 53, 0.15)',
-        text: '#f8f9fa',
-        cta: '#00d4aa',
-        muted: '#6b6b7b',
-        border: 'rgba(255, 255, 255, 0.08)',
-        'border-hover': 'rgba(255, 107, 53, 0.3)',
+        void: '#050505',
+        surface: '#0a0a0f',
+        'surface-elevated': '#111118',
+        primary: '#00f0ff',
+        secondary: '#ff2a6d',
+        accent: '#39ff14',
+        text: '#e8e8f0',
+        muted: '#555566',
+        border: '#1a1a25',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['Fira Code', 'ui-monospace', 'monospace'],
+        mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
       },
       animation: {
+        'cursor-blink': 'blink 1s step-end infinite',
+        'rain': 'rain 20s linear infinite',
         'float': 'float 6s ease-in-out infinite',
-        'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
-        'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite',
+        'glitch': 'glitch 0.3s ease-in-out',
       },
       keyframes: {
+        blink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
-        'pulse-glow': {
-          '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
-          '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+        glow: {
+          '0%, 100%': { opacity: '0.5' },
+          '50%': { opacity: '1' },
         },
-        'gradient-shift': {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
+        glitch: {
+          '0%': { transform: 'translate(0)' },
+          '20%': { transform: 'translate(-2px, 2px)' },
+          '40%': { transform: 'translate(-2px, -2px)' },
+          '60%': { transform: 'translate(2px, 2px)' },
+          '80%': { transform: 'translate(2px, -2px)' },
+          '100%': { transform: 'translate(0)' },
         },
       },
     },
