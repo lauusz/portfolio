@@ -64,7 +64,7 @@ export const socialLinks: SocialLink[] = [
 export const contactInfo = {
   email: 'nikolaussatria@gmail.com',
   location: 'Surabaya, Indonesia',
-  status: 'Available for work',
+  status: 'OPEN TO\nCollaboration & Project Discussion',
 };
 
 export const mailtoLink = 'mailto:nikolaussatria@gmail.com';

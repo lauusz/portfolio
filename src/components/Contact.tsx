@@ -68,7 +68,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-sans text-xs text-muted uppercase tracking-wider">Status</p>
-                    <p className="font-sans text-sm text-accent-secondary">{contactInfo.status}</p>
+                    <p className="font-sans text-sm text-accent-secondary whitespace-pre-line">{contactInfo.status}</p>
                   </div>
                 </div>
               </div>
