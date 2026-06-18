@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { socialLinks } from '../constants/data';
+import { scrollToSmoothly } from '../hooks/useSmoothScroll';
 import * as LucideIcons from 'lucide-react';
 
 const Footer = () => {
@@ -63,7 +64,7 @@ const Footer = () => {
 
       {/* Back to top */}
       <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onClick={() => scrollToSmoothly(0)}
         className={`fixed bottom-6 right-6 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-accent transition-all duration-300 z-50 shadow-lg shadow-black/10 ${
           showBackToTop ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useSmoothScroll } from './hooks/useSmoothScroll';
 import TerminalChatbot from './components/TerminalChatbot';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -10,6 +11,8 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 function App() {
+  useSmoothScroll();
+
   useEffect(() => {
     document.title = 'Nikolaus Satria — UI/UX Designer & Developer';
   }, []);
