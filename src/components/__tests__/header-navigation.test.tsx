@@ -46,4 +46,24 @@ describe('header navigation', () => {
     }));
     expect(aboutLink.className).toContain('bg-surface-elevated');
   });
+
+  test('uses one mobile brand in a wide bar with an accessible menu target', () => {
+    render(<Header />);
+
+    expect(screen.getAllByRole('link', { name: 'Nikolaus.' })).toHaveLength(1);
+    expect(screen.queryByRole('link', { name: 'N.' })).not.toBeInTheDocument();
+
+    const header = screen.getByRole('banner');
+    const headerBar = header.firstElementChild;
+    expect(header).toHaveClass('left-4', 'right-4', 'md:left-1/2', 'md:right-auto');
+    expect(headerBar).toHaveClass('w-full', 'min-h-14', 'justify-between');
+
+    const menuButton = screen.getByRole('button', { name: 'Open menu' });
+    expect(menuButton).toHaveClass('min-h-12', 'min-w-12');
+
+    fireEvent.click(menuButton);
+    const mobileNavigation = screen.getByRole('navigation', { name: 'Mobile navigation' });
+    expect(mobileNavigation.parentElement).toHaveClass('motion-reduce:transition-none');
+    expect(mobileNavigation.parentElement?.parentElement).toHaveClass('motion-reduce:transition-none');
+  });
 });

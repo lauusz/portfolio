@@ -21,10 +21,12 @@
 @layer base {
   html {
     scroll-padding-top: 80px;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-bg text-primary font-sans antialiased;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
