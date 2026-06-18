@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, BrainCircuit } from 'lucide-react';
+import { BrainCircuit, Menu, X } from 'lucide-react';
 import { navLinks } from '../constants/data';
 
 const Header: React.FC = () => {
@@ -16,7 +16,6 @@ const Header: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      // Active section detection
       const scrollPosition = window.scrollY + 120;
       let current = 'home';
       for (let i = navLinks.length - 1; i >= 0; i--) {
@@ -32,8 +31,8 @@ const Header: React.FC = () => {
       setActiveSection(current);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -48,6 +47,34 @@ const Header: React.FC = () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  // Magnetic effect handlers
+  const handleMagneticMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 100) {
+      const f = 1 - dist / 100;
+      el.style.transform = `translate(${dx * 0.15 * f}px, ${dy * 0.15 * f}px)`;
+      el.style.transition = 'transform 0.15s ease-out';
+    } else {
+      el.style.transform = 'translate(0, 0)';
+      el.style.transition = 'transform 0.3s ease-out';
+    }
+  }, []);
+
+  const handleMagneticLeave = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget;
+    el.style.transform = 'translate(0, 0)';
+    el.style.transition = 'transform 0.3s ease-out';
+  }, []);
+
+  const logoText = 'Nikolaus Satria';
+  const logoChars = logoText.split('');
 
   const menuVariants = {
     hidden: { opacity: 0 },
@@ -67,22 +94,58 @@ const Header: React.FC = () => {
     exit: { opacity: 0, y: 20 },
   };
 
+  const logoContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.03, delayChildren: 0.1 },
+    },
+  };
+
+  const logoCharVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+    },
+  };
+
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-16 md:h-20 ${
-        isScrolled
-          ? 'bg-background/80 backdrop-blur-xl'
-          : 'bg-transparent'
+        isScrolled ? 'bg-background/80 backdrop-blur-xl' : 'bg-transparent'
       }`}
     >
       <div className="section-container h-full flex items-center justify-between">
         {/* Logo */}
-        <a
-          href="#home"
-          className="flex items-center gap-2 text-accent font-bold text-lg md:text-xl"
-        >
-          <BrainCircuit className="w-6 h-6 md:w-7 md:h-7" />
-          <span className="tracking-tight">Nikolaus Satria</span>
+        <a href="#home" className="flex items-center gap-2 text-accent font-bold text-lg md:text-xl tracking-tight">
+          <motion.div
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <BrainCircuit className="w-6 h-6 md:w-7 md:h-7" />
+          </motion.div>
+          <motion.span
+            className="flex"
+            variants={prefersReducedMotion ? {} : logoContainerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {logoChars.map((char, i) => (
+              <motion.span
+                key={i}
+                variants={prefersReducedMotion ? {} : logoCharVariants}
+                className="inline-block"
+                style={{ whiteSpace: char === ' ' ? 'pre' : undefined }}
+              >
+                {char === ' ' ? '\u00A0' : char}
+              </motion.span>
+            ))}
+          </motion.span>
         </a>
 
         {/* Desktop Navigation */}
@@ -94,9 +157,18 @@ const Header: React.FC = () => {
               <a
                 key={link.name}
                 href={link.path}
-                className={`nav-link ${isActive ? 'active' : ''}`}
+                className="nav-link transition-transform duration-300"
+                onMouseMove={handleMagneticMove}
+                onMouseLeave={handleMagneticLeave}
               >
-                {link.name}
+                <span className={`relative z-10 ${isActive ? 'text-accent' : ''}`}>{link.name}</span>
+                <span
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-accent rounded-full origin-center transition-transform duration-300 pointer-events-none"
+                  style={{
+                    width: '75%',
+                    transform: isActive ? 'scaleX(1)' : 'scaleX(0)',
+                  }}
+                />
               </a>
             );
           })}
