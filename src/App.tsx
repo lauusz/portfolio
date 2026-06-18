@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import SmoothScroll from './components/SmoothScroll';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -13,17 +14,19 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-text antialiased">
-      <Header />
-      <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <SmoothScroll>
+      <div className="min-h-screen bg-background text-text antialiased">
+        <Header />
+        <main>
+          <Hero />
+          <About />
+          <Skills />
+          <Projects />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </SmoothScroll>
   );
 }
 
