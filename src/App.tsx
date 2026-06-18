@@ -20,7 +20,7 @@ function App() {
       root
       options={{
         lerp: 0.08,
-        duration: 1.2,
+        duration: 1.0,
         smoothWheel: true,
         syncTouch: true,
         touchMultiplier: 1.5,

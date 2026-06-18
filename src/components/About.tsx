@@ -37,7 +37,7 @@ const About = () => {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasAnimated, yearsExp]);
+  }, [hasAnimated]);
 
   return (
     <section id="about" className="section-padding relative" ref={sectionRef}>
