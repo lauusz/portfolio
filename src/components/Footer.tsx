@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { socialLinks } from '../constants/data';
-import { scrollToSmoothly } from '../hooks/useSmoothScroll';
 import * as LucideIcons from 'lucide-react';
 
 const Footer = () => {
@@ -62,15 +61,16 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Back to top */}
-      <button
-        onClick={() => scrollToSmoothly(0)}
+      {/* Back to top — Lenis intercepts anchor clicks for smooth scroll */}
+      <a
+        href="#home"
         className={`fixed bottom-6 right-6 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-accent transition-all duration-300 z-50 shadow-lg shadow-black/10 ${
           showBackToTop ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
+        aria-label="Back to top"
       >
         <ArrowUp size={16} />
-      </button>
+      </a>
     </footer>
   );
 };
