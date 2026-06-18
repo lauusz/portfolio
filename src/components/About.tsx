@@ -8,6 +8,8 @@ const About = () => {
   const [hasAnimated, setHasAnimated] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
+  const yearsExp = new Date().getFullYear() - 2020;
+
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -26,7 +28,7 @@ const About = () => {
             };
             requestAnimationFrame(tick);
           };
-          animate(3, setCount1);
+          animate(yearsExp, setCount1);
           animate(10, setCount2);
           animate(15, setCount3);
         }
@@ -35,7 +37,7 @@ const About = () => {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasAnimated]);
+  }, [hasAnimated, yearsExp]);
 
   return (
     <section id="about" className="section-padding relative" ref={sectionRef}>
@@ -57,7 +59,7 @@ const About = () => {
             <div className="card">
               <div className="p-6 sm:p-8 space-y-5">
                 <p className="font-sans text-base text-muted leading-relaxed">
-                  I'm a tech-driven full-stack developer with a strong focus on UI/UX design, Data Science, and AI. With over 3 years of hands-on experience, I've built responsive web applications that solve real-world problems — from SaaS products to smart contract integrations.
+                  I'm a tech-driven full-stack developer with a strong focus on UI/UX design, Data Science, and AI. With over {yearsExp} years of hands-on experience, I've built responsive web applications that solve real-world problems — from SaaS products to smart contract integrations.
                 </p>
                 <p className="font-sans text-base text-muted leading-relaxed">
                   I specialize in building modern, scalable applications using React, Next.js, Node.js, and TypeScript. I'm also diving deep into Machine Learning and LLMs, currently experimenting with AI agents and automation tools to push the limits of what software can do.
