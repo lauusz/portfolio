@@ -67,8 +67,8 @@ const Contact = () => {
                     <CheckCircle size={18} />
                   </div>
                   <div>
-                    <p className="font-sans text-xs text-muted uppercase tracking-wider">Status</p>
-                    <p className="font-sans text-sm text-accent-secondary whitespace-pre-line">{contactInfo.status}</p>
+                    <p className="font-sans text-xs text-muted uppercase tracking-wider">OPEN TO</p>
+                    <p className="font-sans text-sm text-accent-secondary">{contactInfo.status}</p>
                   </div>
                 </div>
               </div>
